@@ -18,10 +18,10 @@ void ArbitreENT::initialisation()
     //si le numero de partie est pair, c'est _joueur1 qui commence
     switch (((_numero_partie%2)? _player1 : _player2)) {
         case player::M_1:
-            _joueur1 = std::make_shared<Guezmer> ("Guezmer",true,"./coups.csv");
+            _joueur1 = std::make_shared<Guezmer> ("Guezmer",true,"../coups.csv");
             break;
         case player::M_2:
-            _joueur1 = std::make_shared<Guezmer> ("Joueur Montecarlo 2",true,"./coups.csv");
+            _joueur1 = std::make_shared<Guezmer> ("Joueur Montecarlo 2",true,"../coups.csv");
             break;
         case player::MANUEL:
             _joueur1 = std::make_shared<Joueur_Manuel> ("Caro",true);
@@ -48,10 +48,10 @@ void ArbitreENT::initialisation()
     //si le numero de partie est impair, c'est _joueur2 qui commence
     switch (((!(_numero_partie%2))? _player1 : _player2)) {
         case player::M_1:
-            _joueur2 = std::make_shared<Guezmer> ("Guezmer",false,"./coups.csv");
+            _joueur2 = std::make_shared<Guezmer> ("Guezmer",false,"../coups.csv");
             break;
         case player::M_2:
-            _joueur2 = std::make_shared<Guezmer> ("Joueur Montecarlo 2",false,"./coups.csv");
+            _joueur2 = std::make_shared<Guezmer> ("Joueur Montecarlo 2",false,"../coups.csv");
             break;
         case player::MANUEL:
             _joueur2 = std::make_shared<Joueur_Manuel> ("Caro",false);
