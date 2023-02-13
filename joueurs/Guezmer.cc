@@ -1,7 +1,7 @@
 #include "Guezmer.hh"
 #include <iostream>
 #include <fstream>
-#include <cmath> //ahmad
+#include <cmath> 
 
 Guezmer::Guezmer(std::string nom, bool joueur, std::string nomFichier)
     :Joueur(nom,joueur)
@@ -29,7 +29,6 @@ void Guezmer::recherche_coup(Jeu j, couple &coup)
     
 }
 
-//ahmad
 float Guezmer::qubc(float score, int nbPartiePere, int nbPartieFils) {
     return round(1000 * (score + sqrt(2 * (log(static_cast<float>(nbPartiePere))/static_cast<float>(nbPartieFils)))))/1000;
 }
