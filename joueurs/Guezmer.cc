@@ -1,4 +1,4 @@
-#include "guezmer.hh"
+#include "Guezmer.hh"
 #include <iostream>
 #include <fstream>
 #include <cmath> //ahmad

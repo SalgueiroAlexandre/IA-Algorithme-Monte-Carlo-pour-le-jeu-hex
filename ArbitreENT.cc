@@ -21,7 +21,7 @@ void ArbitreENT::initialisation()
             _joueur1 = std::make_shared<Guezmer> ("Guezmer",true,"./coups.csv");
             break;
         case player::M_2:
-            _joueur1 = std::make_shared<Guezmer> ("Guezmer",true,"./coups.csv");
+            _joueur1 = std::make_shared<Guezmer> ("Joueur Montecarlo 2",true,"./coups.csv");
             break;
         case player::MANUEL:
             _joueur1 = std::make_shared<Joueur_Manuel> ("Caro",true);
@@ -51,7 +51,7 @@ void ArbitreENT::initialisation()
             _joueur2 = std::make_shared<Guezmer> ("Guezmer",false,"./coups.csv");
             break;
         case player::M_2:
-            _joueur2 = std::make_shared<Guezmer> ("StoMonteCarlo",false,"./coups.csv");
+            _joueur2 = std::make_shared<Guezmer> ("Joueur Montecarlo 2",false,"./coups.csv");
             break;
         case player::MANUEL:
             _joueur2 = std::make_shared<Joueur_Manuel> ("Caro",false);
