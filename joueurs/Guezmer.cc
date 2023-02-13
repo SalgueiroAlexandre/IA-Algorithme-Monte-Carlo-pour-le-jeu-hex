@@ -2,6 +2,8 @@
 #include <iostream>
 #include <fstream>
 #include <cmath> 
+#include <sstream>
+
 
 Guezmer::Guezmer(std::string nom, bool joueur, std::string nomFichier)
     :Joueur(nom,joueur)
@@ -14,6 +16,18 @@ Guezmer::Guezmer(std::string nom, bool joueur, std::string nomFichier)
     // Lire les coups du fichier
     for(std::string line; getline(readFile, line);) {
         moves.push_back(line);
+    }
+
+    for (const auto& elem : moves) {
+        std::istringstream ss(elem);
+        std::string id;
+        float score;
+        int nbPartie;
+        std::getline(ss, id, ',');  
+        ss >> score; 
+        ss.ignore(); 
+        ss >> nbPartie; 
+        movesStruct.push_back({id, score, nbPartie});
     }
 }
 
