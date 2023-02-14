@@ -31,7 +31,18 @@ Guezmer::Guezmer(std::string nom, bool joueur, std::string nomFichier)
     }
 }
 
+void Guezmer::majEtatPartie(couple coup) {
+    etatPartie += coup.first + "," + coup.second + ";";
+}
 
+bool Guezmer::coupEstConnu(couple coup) const {
+    for (const auto& elem : movesStruct) {
+        if (elem.id == etatPartie + "." + coup.first + coup.second) {
+            return true;
+        }
+    }
+    return false;
+}
 
 void Guezmer::recherche_coup(Jeu j, couple &coup)
 {
