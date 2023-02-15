@@ -16,9 +16,10 @@ public:
   void recherche_coup(Jeu j, couple & coup) override;
   float qubc(float score,int nbPartiePere,int nbPartieFils);
   bool coupEstConnu(couple coup) const;
-  void majEtatPartie(couple coup);
+  static void majEtatPartie(couple coup,int tour);
+  static void resetEtatPartie(){etatPartie = "";};
 private:
   std::vector<std::string> moves;
   std::vector<coupStruct> movesStruct;
-  std::string etatPartie;
+  static std::string etatPartie;
 };

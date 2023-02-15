@@ -5,6 +5,20 @@ Lecteur::Lecteur(std::string f): nomFichier(f)
 
 }
 
+bool compare(const std::string& a, const std::string& b) {
+    // comparer les longueurs
+    if (a.find(',') != std::string::npos && b.find(',') != std::string::npos) {
+        int lenA = a.find(',') + 1; // longueur de la première partie de a (avant la virgule)
+        int lenB = b.find(',') + 1; // longueur de la première partie de b (avant la virgule)
+        if (lenA < lenB) {
+            return true;
+        } else if (lenA > lenB) {
+            return false;
+        }
+    }
+    // si les longueurs sont égales ou que les éléments ne contiennent pas de virgule, comparer alphabétiquement
+    return a < b;
+}
 
 int Lecteur::ecrire(int result){
     std::ifstream readFile(nomFichier);
@@ -53,6 +67,8 @@ int Lecteur::ecrire(int result){
 
             
     }
+    // sort the vector
+    std::sort(fichierStock.begin(), fichierStock.end(), compare);
     // écrire le fichier mis à jour
     std::ofstream outputFile(nomFichier);
     for (const auto &line : fichierStock) {
