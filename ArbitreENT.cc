@@ -126,8 +126,8 @@ int ArbitreENT::challenge()
         initialisation();
     }
     std::cout << "FIN DU CHALLENGE\n\t"
-              << _joueur1->nom() << " gagne " << ((_numero_partie % 2) ? victoire_joueur_1 : victoire_joueur_2)
-              << "\n\t" << _joueur2->nom() << " gagne " << ((_numero_partie % 2) ? victoire_joueur_2 : victoire_joueur_1) << std::endl;
+              << _joueur1->nom() << " gagne " << ((_numero_partie % 2 == 0) ? (victoire_joueur_1*100/_nombre_parties) : (victoire_joueur_2*100/_nombre_parties))<<"% winrate"
+              << "\n\t" << _joueur2->nom() << " gagne " << ((_numero_partie % 2 == 0) ? (victoire_joueur_2*100/_nombre_parties) : (victoire_joueur_1*100/_nombre_parties))<<"% winrate" << std::endl;
     if (_joueur1->nom() == "Guezmer")
     {
         return victoire_joueur_1;
