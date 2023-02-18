@@ -12,7 +12,7 @@ int main()
     std::srand(std::time(nullptr));
 
     //création de l'Arbitre (joueur jouant en 1er la premiere partie, joueur jouant en 2eme celle-ci , nombre de parties)
-    ArbitreENT a (player::M_1, player::RAND2,15,"../coups.csv");
+    ArbitreENT a (player::RAND2,player::M_1,3,"../coups.csv","../coupsV0.csv");
      //commence le challenge
     int r= a.challenge();
 

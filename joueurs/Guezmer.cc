@@ -53,10 +53,12 @@ void Guezmer::recherche_coup(Jeu j, couple &coup)
     bool toutLesCoupsSontConnus = true;
     int taille = j.coups_possibles().size();
     //afficher les coups possibles
+   /* 
     std::cout << "coups possibles" << std::endl;
     for (int i = 0; i < taille; i++) {
         std::cout << j.coups_possibles()[i].first << j.coups_possibles()[i].second << " ; ";
     }
+    */
     std::cout << std::endl;
     // boucle sur tous les coups possibles
     for (int i = 0; i < taille; i++) {
