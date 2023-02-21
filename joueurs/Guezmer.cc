@@ -52,7 +52,7 @@ void Guezmer::recherche_coup(Jeu j, couple &coup)
 {
     bool toutLesCoupsSontConnus = true;
     int taille = j.coups_possibles().size();
-    std::cout<<"etat : "<<etatPartie;
+    //std::cout<<"etat : "<<etatPartie;
     //afficher les coups possibles
    /* 
     std::cout << "coups possibles" << std::endl;
@@ -94,7 +94,15 @@ void Guezmer::recherche_coup(Jeu j, couple &coup)
                     std::cout<<"indice qubc : "<<elem.id <<" "<<elem.score<<" "<<nbPartiePere<<" "<<elem.nbPartie<<std::endl;
                     std::cout<<"qubc : "<<qubc(elem.score,nbPartiePere,elem.nbPartie)<<std::endl;
 
-                    if (qubc(elem.score,nbPartiePere,elem.nbPartie) > max) {
+                    // si le joueur est premier inversé le score
+                    int score = elem.score;
+                    if (etatPartie.size() %2==1)
+                    {
+                        std::cout<<"inversion du score"<<std::endl;
+                        score = 0-elem.score;
+                    }
+
+                    if (qubc(score,nbPartiePere,elem.nbPartie) > max) {
                         max = qubc(elem.score,nbPartiePere,elem.nbPartie);
                         // maj a jour du meilleur coup
                         coup.first=j.coups_possibles()[i].first;
