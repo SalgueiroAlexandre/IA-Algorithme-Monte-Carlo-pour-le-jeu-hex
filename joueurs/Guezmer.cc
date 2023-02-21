@@ -87,7 +87,7 @@ void Guezmer::recherche_coup(Jeu j, couple &coup)
                     nbPartiePere = elem.nbPartie;
                 }
 
-                if (elem.id == etatPartie +"." +std::to_string(j.coups_possibles()[i].first) + std::to_string(j.coups_possibles()[i].second)) {
+                if (elem.id ==((etatPartie=="") ?  std::to_string(j.coups_possibles()[i].first) + std::to_string(j.coups_possibles()[i].second) : etatPartie + "." +std::to_string(j.coups_possibles()[i].first) + std::to_string(j.coups_possibles()[i].second ))) {
                     // si vous voulez regarder les qubc de chaque coup
                     //std::cout << "qubc : " << qubc(elem.score, elem.nbPartie, taille) << " pour le coup : " << j.coups_possibles()[i].first << j.coups_possibles()[i].second << std::endl;
 
