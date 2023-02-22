@@ -41,7 +41,7 @@ void Guezmer::majEtatPartie(couple coup,int tour) {
 
 bool Guezmer::coupEstConnu(couple coup) const {
     for (const auto& elem : movesStruct) {
-        if (elem.id == etatPartie +"."+ std::to_string(coup.first) + std::to_string(coup.second)) {
+        if (elem.id == etatPartie + std::to_string(coup.first) + std::to_string(coup.second)) {
             return true;
         }
     }
@@ -80,6 +80,7 @@ void Guezmer::recherche_coup(Jeu j, couple &coup)
         for (int i = 0; i < taille; i++) {
             for (const auto& elem : movesStruct) {
 
+                std::cout<<"etatPartie : "<<etatPartie<<std::endl;
                 // on prend en compte que l'etatPartie est l'idPere 
                 //pour rceuperer le nombre de partie du pere
 
@@ -87,7 +88,7 @@ void Guezmer::recherche_coup(Jeu j, couple &coup)
                     nbPartiePere = elem.nbPartie;
                 }
 
-                if (elem.id ==((etatPartie=="") ?  std::to_string(j.coups_possibles()[i].first) + std::to_string(j.coups_possibles()[i].second) : etatPartie + "." +std::to_string(j.coups_possibles()[i].first) + std::to_string(j.coups_possibles()[i].second ))) {
+                if (elem.id ==(etatPartie + std::to_string(j.coups_possibles()[i].first) + std::to_string(j.coups_possibles()[i].second))) {
                     // si vous voulez regarder les qubc de chaque coup
                     //std::cout << "qubc : " << qubc(elem.score, elem.nbPartie, taille) << " pour le coup : " << j.coups_possibles()[i].first << j.coups_possibles()[i].second << std::endl;
 
