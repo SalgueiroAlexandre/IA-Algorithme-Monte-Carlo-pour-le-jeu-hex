@@ -123,7 +123,7 @@ float Guezmer::qubc(float score, int nbPartiePere, int nbPartieFils) {
     if(nbPartiePere == 0){
         nbPartiePere = nbPartieFils;
     }
-    return round(1000 * (score + sqrt(2 * (log(static_cast<float>(nbPartiePere))/static_cast<float>(nbPartieFils)))))/1000;
+    return round(1000 * ((score / nbPartieFils) + sqrt(2 * (log(static_cast<float>(nbPartiePere))/static_cast<float>(nbPartieFils)))))/1000;
 }
 
 
