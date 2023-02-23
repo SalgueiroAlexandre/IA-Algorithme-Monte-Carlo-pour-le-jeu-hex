@@ -57,21 +57,30 @@ bool Guezmer::coupEstConnu(couple coup) const {
     return false;
 }
 
+
+
 void Guezmer::recherche_coup(Jeu j, couple &coup)
 {
     bool toutLesCoupsSontConnus = true;
     int taille = j.coups_possibles().size();
     std::cout << std::endl;
+    std::vector<couple> coupsInconnus;
     // boucle sur tous les coups possibles
     for (int i = 0; i < taille; i++) {
         // si le coup n'est pas connu par montecarlo on le joue
         if (!coupEstConnu(j.coups_possibles()[i])) {
             toutLesCoupsSontConnus = false;
-            std::cout << "coup non connu : " << j.coups_possibles()[i].first << j.coups_possibles()[i].second << std::endl;
-            coup.first=j.coups_possibles()[i].first;
-            coup.second=j.coups_possibles()[i].second;
-            return;
+            coupsInconnus.push_back(j.coups_possibles()[i]);
         }
+    }
+
+    if(!toutLesCoupsSontConnus){
+        // on joue un coup inconnu aleatoirement
+        int random = rand() % (coupsInconnus.size());
+        coup.first = coupsInconnus[random].first;
+        coup.second = coupsInconnus[random].second;
+        std::cout<< "coup inconnu  aleatoirement jouer : " << coup.first << coup.second << std::endl;
+        return;
     }
 
     // si tous les coups sont connus on utilise le qubc pour connaitre le meilleur coup
