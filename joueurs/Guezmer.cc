@@ -41,8 +41,17 @@ void Guezmer::majEtatPartie(couple coup,int tour) {
 
 bool Guezmer::coupEstConnu(couple coup) const {
     for (const auto& elem : movesStruct) {
-        if (elem.id == etatPartie + std::to_string(coup.first) + std::to_string(coup.second)) {
-            return true;
+        // si etatPartie est inferieur ou egal a 1
+        if(etatPartie.size() <= 1){
+            // on verifie que le coup est dans le vecteur movesStruct
+            if (elem.id == std::to_string(coup.first) + std::to_string(coup.second)) {
+                return true;
+            }
+        }else{
+            // on verifie que le coup est dans le vecteur movesStruct
+            if (elem.id == etatPartie + "." + std::to_string(coup.first) + std::to_string(coup.second)) {
+                return true;
+            }
         }
     }
     return false;
@@ -52,14 +61,6 @@ void Guezmer::recherche_coup(Jeu j, couple &coup)
 {
     bool toutLesCoupsSontConnus = true;
     int taille = j.coups_possibles().size();
-    //std::cout<<"etat : "<<etatPartie;
-    //afficher les coups possibles
-   /* 
-    std::cout << "coups possibles" << std::endl;
-    for (int i = 0; i < taille; i++) {
-        std::cout << j.coups_possibles()[i].first << j.coups_possibles()[i].second << " ; ";
-    }
-    */
     std::cout << std::endl;
     // boucle sur tous les coups possibles
     for (int i = 0; i < taille; i++) {
@@ -79,22 +80,25 @@ void Guezmer::recherche_coup(Jeu j, couple &coup)
         int nbPartiePere = 0;
         for (int i = 0; i < taille; i++) {
             for (const auto& elem : movesStruct) {
-
-                std::cout<<"etatPartie : "<<etatPartie<<std::endl;
                 // on prend en compte que l'etatPartie est l'idPere 
                 //pour rceuperer le nombre de partie du pere
-
                 if(elem.id == etatPartie){
                     nbPartiePere = elem.nbPartie;
                 }
-
-                if (elem.id ==(etatPartie + std::to_string(j.coups_possibles()[i].first) + std::to_string(j.coups_possibles()[i].second))) {
+                std::string comparateur;
+                // si etatPartie est inferieur ou egal a 1
+                if(etatPartie.size() <= 1){
+                    // on verifie que le coup est dans le vecteur movesStruct
+                    comparateur = std::to_string(j.coups_possibles()[i].first) + std::to_string(j.coups_possibles()[i].second);
+                }else{
+                    // on verifie que le coup est dans le vecteur movesStruct
+                    comparateur = etatPartie + "." + std::to_string(j.coups_possibles()[i].first) + std::to_string(j.coups_possibles()[i].second);
+                }
+                if (elem.id == comparateur) {
                     // si vous voulez regarder les qubc de chaque coup
                     //std::cout << "qubc : " << qubc(elem.score, elem.nbPartie, taille) << " pour le coup : " << j.coups_possibles()[i].first << j.coups_possibles()[i].second << std::endl;
-
                     std::cout<<"indice qubc : "<<elem.id <<" "<<elem.score<<" "<<nbPartiePere<<" "<<elem.nbPartie<<std::endl;
                     std::cout<<"qubc : "<<qubc(elem.score,nbPartiePere,elem.nbPartie)<<std::endl;
-
                     // si le joueur est premier inversé le score
                     int score = elem.score;
                     if (etatPartie.size() %2==1)
@@ -116,6 +120,9 @@ void Guezmer::recherche_coup(Jeu j, couple &coup)
 }
 
 float Guezmer::qubc(float score, int nbPartiePere, int nbPartieFils) {
+    if(nbPartiePere == 0){
+        nbPartiePere = nbPartieFils;
+    }
     return round(1000 * (score + sqrt(2 * (log(static_cast<float>(nbPartiePere))/static_cast<float>(nbPartieFils)))))/1000;
 }
 
