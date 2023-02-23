@@ -104,7 +104,7 @@ void Guezmer::recherche_coup(Jeu j, couple &coup)
                     if (etatPartie.size() %2==1)
                     {
                         std::cout<<"inversion du score"<<std::endl;
-                        score = 0-elem.score;
+                        score = -elem.score;
                     }
 
                     if (qubc(score,nbPartiePere,elem.nbPartie) > max) {
