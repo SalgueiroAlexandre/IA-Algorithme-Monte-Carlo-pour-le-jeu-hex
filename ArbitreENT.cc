@@ -122,6 +122,8 @@ result ArbitreENT::partie()
             std::cerr << std::endl
                       << "mutex non rendu " << std::endl;
             try_lock = true;
+            // arret du programme
+            exit(1);
         }
         else if (_jeu.case_libre(_coups[_numero_partie - 1]) == false)
         {
@@ -151,8 +153,8 @@ result ArbitreENT::partie()
         Guezmer::majEtatPartie(_coups[_numero_partie - 1], tour);
 
         std::cout << ((tour % 2) ? _joueur1->nom() : _joueur2->nom()) << " abs : " << _coups[_numero_partie - 1].second << " ord : " << _coups[_numero_partie - 1].first
-                  << std::endl
-                  << _jeu << std::endl;
+                  << std::endl;
+                  //<< _jeu << std::endl; // AFFICHAGE DU JEU
     }
 
     /*if (_jeu.partie_nulle())
@@ -175,6 +177,5 @@ result ArbitreENT::partie()
                   << _joueur2->nom() << " gagne. Nombre de tours : " << tour << std::endl;
         return result::P2;
     }
-
     return result::ERREUR;
 }

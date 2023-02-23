@@ -85,6 +85,7 @@ void Guezmer::recherche_coup(Jeu j, couple &coup)
 
     // si tous les coups sont connus on utilise le qubc pour connaitre le meilleur coup
     if (toutLesCoupsSontConnus) {
+        std::cout<< "tous les coups sont connus" << std::endl;
         float max = 0;
         int nbPartiePere = 0;
         for (int i = 0; i < taille; i++) {
