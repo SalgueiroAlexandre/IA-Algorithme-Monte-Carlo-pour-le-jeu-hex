@@ -75,7 +75,6 @@ int ArbitreENT::challenge()
                 victoire_joueur_2++;
         }
                 
-
         std::this_thread::sleep_for(std::chrono::milliseconds(2500)); // temps de latence entre deux parties
         _numero_partie++;
         // ECRITURE DE LA VICTOIRE 
@@ -100,6 +99,7 @@ int ArbitreENT::challenge()
 
 result ArbitreENT::partie()
 {
+    int TEMPS_POUR_UN_COUP(500);
     int tour = 0;
     bool coup_ok; // si le coup est valide
     while (!_jeu.partie_finie())
@@ -109,6 +109,10 @@ result ArbitreENT::partie()
         _coups[_numero_partie - 1].second = -1;
         coup_ok = true;
         tour++;
+        if (tour == 4)
+        {
+            TEMPS_POUR_UN_COUP = 80;
+        }
         std::cout << "tour : " << tour << std::endl;
         _coups_mutex[_numero_partie - 1].unlock();
 

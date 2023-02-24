@@ -139,7 +139,8 @@ result Arbitre::partie()
                                       _jeu,
                                       std::ref(_coups[_numero_partie-1]),
                     std::ref(_coups_mutex[_numero_partie-1]));
-
+            
+            
             std::this_thread::sleep_for (std::chrono::milliseconds(TEMPS_POUR_UN_COUP));
             //        std::this_thread::sleep_for (std::chrono::seconds(TEMPS_POUR_UN_COUP));
 
