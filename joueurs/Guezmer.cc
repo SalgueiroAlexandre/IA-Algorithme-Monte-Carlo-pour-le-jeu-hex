@@ -116,6 +116,8 @@ void Guezmer::recherche_coup(Jeu j, couple &coup)
                         std::cout<<"inversion du score"<<std::endl;
                         score = -elem.score;
                     }
+                    else
+                        std::cout<<"on garde le score"<<std::endl;
 
                     if (qubc(score,nbPartiePere,elem.nbPartie) > max) {
                         max = qubc(elem.score,nbPartiePere,elem.nbPartie);

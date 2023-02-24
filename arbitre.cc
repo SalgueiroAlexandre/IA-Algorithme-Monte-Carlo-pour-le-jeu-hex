@@ -2,7 +2,7 @@
 
 
 Arbitre::Arbitre(player player1, player player2, int nombre_parties):
-    _jeu(11),
+    _jeu(4),
     _coups(nombre_parties),
     _coups_mutex(nombre_parties),
     _nombre_parties(nombre_parties),

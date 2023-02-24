@@ -26,7 +26,7 @@ void ArbitreENT::initialisation()
         _joueur1 = std::make_shared<Joueur_Manuel>("Vio", true);
         break;
     case player::RAND:
-        _joueur1 = std::make_shared<Joueur_Random>("Random", true);
+        _joueur2 = std::make_shared<Joueur_Random>("Random", false);
         break;
     case player::RAND2:
         _joueur1 = std::make_shared<Joueur_Random>("Aleatoire", true);
@@ -40,7 +40,7 @@ void ArbitreENT::initialisation()
     default:
         break;
     }
-    _joueur2 = std::make_shared<Guezmer>("GuezmerJoueur2", false, "../coups.csv");
+    _joueur1 = std::make_shared<Guezmer>("GuezmerJoueur2", true, "../coups4x4.csv");
     _jeu.vider_jeu();
 }
 
