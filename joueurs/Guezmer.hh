@@ -18,6 +18,8 @@ public:
   bool coupEstConnu(couple coup) const;
   static void majEtatPartie(couple coup,int tour);
   static void resetEtatPartie(){etatPartie = "";};
+  void recherche_coup2(Jeu j, couple & coup);
+  bool compareMoyscore(const coupStruct& a, const coupStruct& b);
 private:
   std::vector<std::string> moves;
   std::vector<coupStruct> movesStruct;
