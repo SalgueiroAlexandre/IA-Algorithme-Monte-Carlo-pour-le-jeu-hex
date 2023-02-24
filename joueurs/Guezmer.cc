@@ -85,6 +85,7 @@ void Guezmer::recherche_coup(Jeu j, couple &coup)
 
     // si tous les coups sont connus on utilise le qubc pour connaitre le meilleur coup
     if (toutLesCoupsSontConnus) {
+        //recherche_coup2(j, coup);
         std::cout<< "tous les coups sont connus" << std::endl;
         float max = 0;
         int nbPartiePere = 0;
@@ -111,11 +112,13 @@ void Guezmer::recherche_coup(Jeu j, couple &coup)
                     std::cout<<"qubc : "<<qubc(elem.score,nbPartiePere,elem.nbPartie)<<std::endl;
                     // si le joueur est premier inversé le score
                     int score = elem.score;
-                    if (etatPartie.size() %2==1)
+                    if (etatPartie.size() %2==1 || etatPartie.size()==0)
                     {
                         std::cout<<"inversion du score"<<std::endl;
                         score = -elem.score;
                     }
+                    else
+                        std::cout<<"on garde le score"<<std::endl;
 
                     if (qubc(score,nbPartiePere,elem.nbPartie) > max) {
                         max = qubc(elem.score,nbPartiePere,elem.nbPartie);
@@ -136,5 +139,26 @@ float Guezmer::qubc(float score, int nbPartiePere, int nbPartieFils) {
     return round(1000 * ((score / nbPartieFils) + sqrt(2 * (log(static_cast<float>(nbPartiePere))/static_cast<float>(nbPartieFils)))))/1000;
 }
 
+bool Guezmer::compareMoyscore(const coupStruct& a, const coupStruct& b) {
+    return a.score/static_cast<float>(a.nbPartie) > b.score/static_cast<float>(b.nbPartie);
+}
+
+
+void Guezmer::recherche_coup2(Jeu j, couple &coup){
+    std::string etat_parti_pre = etatPartie.substr(0, etatPartie.size() - 3);
+    std::cout<<"etat_parti_pre : "<<etat_parti_pre<<std::endl;
+    std::vector<coupStruct> coupsInteressant;
+    for (const auto& elem : movesStruct){
+        std::string coup_prec = elem.id.substr(0, elem.id.size() - 3);
+        if (coup_prec == etat_parti_pre && elem.id.size()>2){
+            coupsInteressant.push_back(elem);
+        }
+    }
+    for(const auto& elem : coupsInteressant){
+        std::cout<<"coup : "<<elem.id<<" score : "<<elem.score<<std::endl;
+    }
+    //std::sort(coupsInteressant.begin(), coupsInteressant.end(), compareMoyscore); // trier le vector en fonction du score
+    std::cout<<"coup le plus interessant : "<<coupsInteressant[0].id<<", "<<coupsInteressant[0].score<<", "<<coupsInteressant[0].nbPartie<<std::endl;
+}
 
 
