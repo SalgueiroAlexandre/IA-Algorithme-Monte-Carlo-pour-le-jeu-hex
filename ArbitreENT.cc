@@ -57,7 +57,12 @@ int ArbitreENT::challenge()
         std::cout << "\n"
                   << "Partie n°" << _numero_partie << " : " << std::endl
                   << _jeu;
+        // calcul du temps d'une partie
+        auto start = std::chrono::high_resolution_clock::now();
         result resultat = partie();
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end - start;
+        std::cout << "Temps de la partie : " << elapsed_seconds.count() << "s" << std::endl;
         if (resultat == result::ERREUR)
         {
             std::cerr << "Alerte bug. Sauvez votre terminal et prévenez Me Devred. Merci. " << std::endl;
