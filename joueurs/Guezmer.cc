@@ -111,7 +111,7 @@ void Guezmer::recherche_coup(Jeu j, couple &coup)
                     std::cout<<"qubc : "<<qubc(elem.score,nbPartiePere,elem.nbPartie)<<std::endl;
                     // si le joueur est premier inversé le score
                     int score = elem.score;
-                    if (etatPartie.size() %2==1)
+                    if (etatPartie.size() %2==1 || etatPartie.size()==0)
                     {
                         std::cout<<"inversion du score"<<std::endl;
                         score = -elem.score;
