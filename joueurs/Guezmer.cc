@@ -29,6 +29,7 @@ Guezmer::Guezmer(std::string nom, bool joueur, std::string nomFichier)
         ss >> nbPartie; 
         movesStruct.push_back({id, score, nbPartie});
     }
+
 }
 
 // Initialisation de la variable statique
@@ -82,7 +83,7 @@ void Guezmer::recherche_coup(Jeu j, couple &coup)
         std::cout<< "coup inconnu  aleatoirement jouer : " << coup.first << coup.second << std::endl;
         return;
     }
-
+    
     // si tous les coups sont connus on utilise le qubc pour connaitre le meilleur coup
     if (toutLesCoupsSontConnus) {
         //recherche_coup2(j, coup);
@@ -108,18 +109,9 @@ void Guezmer::recherche_coup(Jeu j, couple &coup)
                 if (elem.id == comparateur) {
                     // si vous voulez regarder les qubc de chaque coup
                     //std::cout << "qubc : " << qubc(elem.score, elem.nbPartie, taille) << " pour le coup : " << j.coups_possibles()[i].first << j.coups_possibles()[i].second << std::endl;
-                    std::cout<<"indice qubc : "<<elem.id <<" "<<elem.score<<" "<<nbPartiePere<<" "<<elem.nbPartie<<std::endl;
-                    std::cout<<"qubc : "<<qubc(elem.score,nbPartiePere,elem.nbPartie)<<std::endl;
+                    // std::cout<<"qubc de : "<<elem.id<<" : "<<qubc(elem.score,nbPartiePere,elem.nbPartie)<<std::endl;
                     // si le joueur est premier inversé le score
                     int score = elem.score;
-                    if (etatPartie.size() %2==1 || etatPartie.size()==0)
-                    {
-                        std::cout<<"inversion du score"<<std::endl;
-                        score = -elem.score;
-                    }
-                    else
-                        std::cout<<"on garde le score"<<std::endl;
-
                     if (qubc(score,nbPartiePere,elem.nbPartie) > max) {
                         max = qubc(elem.score,nbPartiePere,elem.nbPartie);
                         // maj a jour du meilleur coup
@@ -134,9 +126,12 @@ void Guezmer::recherche_coup(Jeu j, couple &coup)
 
 float Guezmer::qubc(float score, int nbPartiePere, int nbPartieFils) {
     if(nbPartiePere == 0){
-        nbPartiePere = nbPartieFils;
+        nbPartiePere = moves.size();
     }
-    return round(1000 * ((score / nbPartieFils) + sqrt(2 * (log(static_cast<float>(nbPartiePere))/static_cast<float>(nbPartieFils)))))/1000;
+    if(!joueur()){ // si je suis le joueur 2
+        score = score * -1;
+    }
+    return (score / nbPartieFils) + sqrt((0.5 * log(nbPartiePere))/(nbPartieFils));
 }
 
 bool Guezmer::compareMoyscore(const coupStruct& a, const coupStruct& b) {

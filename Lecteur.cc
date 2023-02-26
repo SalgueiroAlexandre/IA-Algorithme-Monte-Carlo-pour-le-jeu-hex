@@ -43,7 +43,7 @@ int Lecteur::ecrire(int result){
     for (std::vector<Move>::size_type i = 0; i < moves.size();i++) {
         bool found = false;
         // Parcourir fichierStock pour trouver une entrée correspondante
-        for (std::vector<std::string>::size_type j = 0; j < fichierStock.size(); j++) {
+        for (std::vector<std::string>::size_type j = 1; j < fichierStock.size(); j++) {
             std::string firstPart = fichierStock[j].substr(0, fichierStock[j].find(","));
             if (firstPart == moves[i].ID) {
                 found = true;
@@ -64,8 +64,6 @@ int Lecteur::ecrire(int result){
             moves.clear();
             break;
         }
-
-            
     }
     // sort the vector
     std::sort(fichierStock.begin(), fichierStock.end(), compare);

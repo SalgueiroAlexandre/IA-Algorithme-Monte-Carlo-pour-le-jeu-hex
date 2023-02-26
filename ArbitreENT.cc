@@ -11,36 +11,64 @@ lecteur(fichierENT)
 void ArbitreENT::initialisation()
 {
 
-    switch (_player1)
-    {
-    case player::M_1:
-        _joueur1 = std::make_shared<Guezmer>("GuezmerV0", true, fichierV0);
+    switch (((_numero_partie%2)? _player1 : _player2)) {
+        case player::M_1:
+            _joueur1 = std::make_shared<Guezmer> ("Guezmer",true,fichierV0);
+            break;
+        case player::M_2:
+            _joueur1 = std::make_shared<Guezmer> ("Guezmer2",true,fichierV0);
+            break;
+        case player::MANUEL:
+            _joueur1 = std::make_shared<Joueur_Manuel> ("Caro",true);
+            break;
+        case player::MANUEL2:
+            _joueur1 = std::make_shared<Joueur_Manuel> ("Vio",true);
+            break;
+        case player::RAND:
+            _joueur1 = std::make_shared<Joueur_Random> ("Random",true);
+            break;
+        case player::RAND2:
+            _joueur1 = std::make_shared<Joueur_Random> ("Aleatoire",true);
+            break;
+        case player::A_1:
+        _joueur1 = std::make_shared<Joueur_AlphaBeta> ("AlphaBeta",true);
         break;
-    case player::M_2:
-        _joueur1 = std::make_shared<Guezmer>("Guezmer", true, "../coups.csv");
+        case player::A_2:
+        _joueur1 = std::make_shared<Joueur_AlphaBeta> ("MaxAlphaBeta",true);
         break;
-    case player::MANUEL:
-        _joueur1 = std::make_shared<Joueur_Manuel>("Caro", true);
-        break;
-    case player::MANUEL2:
-        _joueur1 = std::make_shared<Joueur_Manuel>("Vio", true);
-        break;
-    case player::RAND:
-        _joueur2 = std::make_shared<Joueur_Random>("Random", false);
-        break;
-    case player::RAND2:
-        _joueur1 = std::make_shared<Joueur_Random>("Aleatoire", true);
-        break;
-    case player::A_1:
-        _joueur1 = std::make_shared<Joueur_AlphaBeta>("AlphaBeta", true);
-        break;
-    case player::A_2:
-        _joueur1 = std::make_shared<Joueur_AlphaBeta>("MaxAlphaBeta", true);
-        break;
-    default:
-        break;
-    }
-    _joueur1 = std::make_shared<Guezmer>("GuezmerJoueur2", true, "../coups4x4.csv");
+        default:
+            break;
+        }
+
+    //si le numero de partie est impair, c'est _joueur2 qui commence
+    switch (((!(_numero_partie%2))? _player1 : _player2)) {
+        case player::M_1:
+            _joueur2 = std::make_shared<Guezmer> ("Guezmer",false,fichierV0);
+            break;
+        case player::M_2:
+            _joueur2 = std::make_shared<Guezmer> ("Guezmer2",false,fichierV0);
+            break;
+        case player::MANUEL:
+            _joueur2 = std::make_shared<Joueur_Manuel> ("Caro",false);
+            break;
+        case player::MANUEL2:
+            _joueur2 = std::make_shared<Joueur_Manuel> ("Vio",false);
+            break;
+        case player::RAND:
+            _joueur2 = std::make_shared<Joueur_Random> ("Random",false);
+            break;
+        case player::RAND2:
+            _joueur2 = std::make_shared<Joueur_Random> ("Aleatoire",false);
+            break;
+        case player::A_1:
+            _joueur1 = std::make_shared<Joueur_AlphaBeta> ("AlphaBeta",false);
+            break;
+        case player::A_2:
+            _joueur1 = std::make_shared<Joueur_AlphaBeta> ("MaxAlphaBeta",false);
+            break;
+        default:
+            break;
+        }
     _jeu.vider_jeu();
 }
 
@@ -55,8 +83,8 @@ int ArbitreENT::challenge()
     while (_numero_partie <= _nombre_parties)
     {
         std::cout << "\n"
-                  << "Partie n°" << _numero_partie << " : " << std::endl
-                  << _jeu;
+                  << "Partie n°" << _numero_partie << " : " << std::endl;
+                  //<< _jeu;
         // calcul du temps d'une partie
         auto start = std::chrono::high_resolution_clock::now();
         result resultat = partie();
@@ -77,13 +105,6 @@ int ArbitreENT::challenge()
                 
         std::this_thread::sleep_for(std::chrono::milliseconds(2500)); // temps de latence entre deux parties
         _numero_partie++;
-        // ECRITURE DE LA VICTOIRE 
-        if (resultat == result::P1)
-        {
-            lecteur.ecrire(-1);
-        }
-        else
-            lecteur.ecrire(1);
         initialisation();
     }
     std::cout << "FIN DU CHALLENGE\n\t"
@@ -99,7 +120,7 @@ int ArbitreENT::challenge()
 
 result ArbitreENT::partie()
 {
-    int TEMPS_POUR_UN_COUP(500);
+    int TEMPS_POUR_UN_COUP(7000);
     int tour = 0;
     bool coup_ok; // si le coup est valide
     while (!_jeu.partie_finie())
@@ -111,7 +132,7 @@ result ArbitreENT::partie()
         tour++;
         if (tour == 4)
         {
-            TEMPS_POUR_UN_COUP = 80; // valeur a changer pour la ms
+            TEMPS_POUR_UN_COUP = 100; // valeur a changer pour la ms
         }
         std::cout << "tour : " << tour << std::endl;
         _coups_mutex[_numero_partie - 1].unlock();
@@ -132,7 +153,7 @@ result ArbitreENT::partie()
                       << "mutex non rendu " << std::endl;
             try_lock = true;
             // arret du programme
-            exit(1);
+            // exit(1);
         }
         else if (_jeu.case_libre(_coups[_numero_partie - 1]) == false)
         {
@@ -174,6 +195,7 @@ result ArbitreENT::partie()
     else */
     if (_jeu.cotes_relies() == 1)
     {
+        lecteur.ecrire(1);
         Guezmer::resetEtatPartie();
         std::cout << std::endl
                   << _joueur1->nom() << " gagne. Nombre de tours : " << tour << std::endl;
@@ -181,6 +203,7 @@ result ArbitreENT::partie()
     }
     else if (_jeu.cotes_relies() == 2)
     {
+        lecteur.ecrire(-1);
         Guezmer::resetEtatPartie();
         std::cout << std::endl
                   << _joueur2->nom() << " gagne. Nombre de tours : " << tour << std::endl;
