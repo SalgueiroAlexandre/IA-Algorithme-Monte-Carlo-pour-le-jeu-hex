@@ -132,7 +132,7 @@ result ArbitreENT::partie()
         tour++;
         if (tour == 4)
         {
-            TEMPS_POUR_UN_COUP = 100; // valeur a changer pour la ms
+            TEMPS_POUR_UN_COUP = 140; // valeur a changer pour la ms
         }
         std::cout << "tour : " << tour << std::endl;
         _coups_mutex[_numero_partie - 1].unlock();
