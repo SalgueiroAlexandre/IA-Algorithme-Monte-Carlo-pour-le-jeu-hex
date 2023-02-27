@@ -1,4 +1,5 @@
 #include "Guezmer.hh"
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <cmath> 
@@ -87,7 +88,6 @@ void Guezmer::recherche_coup(Jeu j, couple &coup)
     
     // si tous les coups sont connus on utilise le qubc pour connaitre le meilleur coup
     if (toutLesCoupsSontConnus) {
-        //recherche_coup2(j, coup);
         std::cout<< "tous les coups sont connus" << std::endl;
         float max = 0;
         int nbPartiePere = 0;
@@ -153,7 +153,9 @@ void Guezmer::recherche_coup2(Jeu j, couple &coup){
     for(const auto& elem : coupsInteressant){
         std::cout<<"coup : "<<elem.id<<" score : "<<elem.score<<std::endl;
     }
-    //std::sort(coupsInteressant.begin(), coupsInteressant.end(), compareMoyscore); // trier le vector en fonction du score
+    std::sort(coupsInteressant.begin(), coupsInteressant.end(), [](const coupStruct& a, const coupStruct& b) {
+    return a.score/static_cast<float>(a.nbPartie) > b.score/static_cast<float>(b.nbPartie);});
+    // trier le vector en fonction du score
     std::cout<<"coup le plus interessant : "<<coupsInteressant[0].id<<", "<<coupsInteressant[0].score<<", "<<coupsInteressant[0].nbPartie<<std::endl;
 }
 
