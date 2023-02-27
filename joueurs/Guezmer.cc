@@ -82,6 +82,7 @@ void Guezmer::recherche_coup(Jeu j, couple &coup)
         coup.first = coupsInconnus[random].first;
         coup.second = coupsInconnus[random].second;
         std::cout<< "coup inconnu  aleatoirement jouer : " << coup.first << coup.second << std::endl;
+        bloquer(j,coup);
         return;
     }
     
@@ -193,14 +194,11 @@ void Guezmer::bloquer(Jeu j,couple &coup){
             for (int k = -1; k <=1; k++)
             {
                 if(i!=0 && k!=0){
-                    if(x+i>=0 && y+k >=0)
-                    {
-                        couple c(y+k,x+i);
-                        if(j.case_libre(c)){
-                            coups_adjacent.push_back(c);
-                        }
-                    
+                    couple c(y+k,x+i);
+                    if(j.case_libre(c)){
+                        coups_adjacent.push_back(c);
                     }
+                    
                 }
                 
             }
@@ -211,9 +209,19 @@ void Guezmer::bloquer(Jeu j,couple &coup){
 
             std::cout<<"coup adjacent : "<<elem.first<<", "<<elem.second<<std::endl;
         }
-        int random = rand() % (coups_adjacent.size());
-        coup.first = coups_adjacent[random].first;
-        coup.second = coups_adjacent[random].second;
+        if(coups_adjacent.size()!=0){
+            int random = rand() % (coups_adjacent.size());
+            coup.first = coups_adjacent[random].first;
+            coup.second = coups_adjacent[random].second;
+        }
+        else
+        {
+            int taille = j.coups_possibles().size();
+            int num = rand()%(taille);
+            coup.first=j.coups_possibles()[num].first;
+            coup.second=j.coups_possibles()[num].second;
+        }
+        
         //cout coup
         std::cout<<"coup : "<<coup.first<<", "<<coup.second<<std::endl;
 
