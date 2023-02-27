@@ -107,10 +107,6 @@ void Guezmer::recherche_coup(Jeu j, couple &coup)
                     comparateur = etatPartie + "." + std::to_string(coupsPossibles[i].first) + std::to_string(coupsPossibles[i].second);
                 }
                 if (elem.id == comparateur) {
-                    // si vous voulez regarder les qubc de chaque coup
-                    //std::cout << "qubc : " << qubc(elem.score, elem.nbPartie, taille) << " pour le coup : " << coupsPossibles[i].first << coupsPossibles[i].second << std::endl;
-                    // std::cout<<"qubc de : "<<elem.id<<" : "<<qubc(elem.score,nbPartiePere,elem.nbPartie)<<std::endl;
-                    // si le joueur est premier inversé le score
                     int score = elem.score;
                     if (qubc(score,nbPartiePere,elem.nbPartie) > max) {
                         max = qubc(elem.score,nbPartiePere,elem.nbPartie);

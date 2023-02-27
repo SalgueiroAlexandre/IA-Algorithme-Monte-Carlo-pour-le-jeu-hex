@@ -18,6 +18,4 @@ int main()
 
    return r;
 
-
-
 }
