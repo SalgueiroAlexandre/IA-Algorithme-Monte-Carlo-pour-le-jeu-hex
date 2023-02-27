@@ -55,12 +55,14 @@ int Lecteur::ecrire(int result){
                 int newScore = std::stoi(score) + result;
                 int newNb = std::stoi(nb) + 1;
                 fichierStock[j] = id + "," + std::to_string(newScore) + "," + std::to_string(newNb);
+                std::cout<< "rollback sur " << id << " : nouveau score : " << newScore << "  nouveau nb parties : " << newNb << std::endl;
             }
         }
         // Si aucune entrée correspondante n'a été trouvée, la créer
         if (!found) {
             fichierStock.push_back(moves[i].ID + "," + std::to_string(result) + "," + "1");
             // clear the vector
+            std::cout << "ajout de " << moves[i].ID << " avec un score de " << result << std::endl;    
             moves.clear();
             break;
         }

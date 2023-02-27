@@ -76,6 +76,14 @@
         "stop_token": "cpp",
         "thread": "cpp",
         "complex": "cpp",
-        "optional": "cpp"
+        "optional": "cpp",
+        "list": "cpp",
+        "map": "cpp",
+        "set": "cpp",
+        "unordered_set": "cpp",
+        "numeric": "cpp",
+        "numbers": "cpp",
+        "cinttypes": "cpp",
+        "valarray": "cpp"
     }
 }

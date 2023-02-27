@@ -120,7 +120,7 @@ int ArbitreENT::challenge()
 
 result ArbitreENT::partie()
 {
-    int TEMPS_POUR_UN_COUP(7000);
+    int TEMPS_POUR_UN_COUP(20000);
     int tour = 0;
     bool coup_ok; // si le coup est valide
     while (!_jeu.partie_finie())
@@ -130,9 +130,9 @@ result ArbitreENT::partie()
         _coups[_numero_partie - 1].second = -1;
         coup_ok = true;
         tour++;
-        if (tour == 4)
+        if (tour == 3)
         {
-            TEMPS_POUR_UN_COUP = 140; // valeur a changer pour la ms
+            TEMPS_POUR_UN_COUP = 200; // valeur a changer pour la ms
         }
         std::cout << "tour : " << tour << std::endl;
         _coups_mutex[_numero_partie - 1].unlock();
@@ -157,6 +157,7 @@ result ArbitreENT::partie()
         }
         else if (_jeu.case_libre(_coups[_numero_partie - 1]) == false)
         {
+            Guezmer::resetEtatPartie();
             std::cerr << "coup invalide abs : " << _coups[_numero_partie - 1].second << " ,ord : " << _coups[_numero_partie - 1].first << std::endl;
             coup_ok = false;
         }
@@ -209,5 +210,6 @@ result ArbitreENT::partie()
                   << _joueur2->nom() << " gagne. Nombre de tours : " << tour << std::endl;
         return result::P2;
     }
+    Guezmer::resetEtatPartie();
     return result::ERREUR;
 }

@@ -37,7 +37,6 @@ std::string Guezmer::etatPartie = "";
 
 void Guezmer::majEtatPartie(couple coup,int tour) {
     tour == 1 ? etatPartie += std::to_string(coup.first) + std::to_string(coup.second) : etatPartie += "." + std::to_string(coup.first) + std::to_string(coup.second);
-    std::cout << "etatPartie : " << etatPartie << std::endl;
 }
 
 bool Guezmer::coupEstConnu(couple coup) const {
@@ -63,15 +62,17 @@ bool Guezmer::coupEstConnu(couple coup) const {
 void Guezmer::recherche_coup(Jeu j, couple &coup)
 {
     bool toutLesCoupsSontConnus = true;
-    int taille = j.coups_possibles().size();
+    auto coupsPossibles = j.coups_possibles();
+    int taille = coupsPossibles.size();
     std::cout << std::endl;
     std::vector<couple> coupsInconnus;
+    
     // boucle sur tous les coups possibles
     for (int i = 0; i < taille; i++) {
         // si le coup n'est pas connu par montecarlo on le joue
-        if (!coupEstConnu(j.coups_possibles()[i])) {
+        if (!coupEstConnu(coupsPossibles[i])) {
             toutLesCoupsSontConnus = false;
-            coupsInconnus.push_back(j.coups_possibles()[i]);
+            coupsInconnus.push_back(coupsPossibles[i]);
         }
     }
 
@@ -101,22 +102,22 @@ void Guezmer::recherche_coup(Jeu j, couple &coup)
                 // si etatPartie est inferieur ou egal a 1
                 if(etatPartie.size() <= 1){
                     // on verifie que le coup est dans le vecteur movesStruct
-                    comparateur = std::to_string(j.coups_possibles()[i].first) + std::to_string(j.coups_possibles()[i].second);
+                    comparateur = std::to_string(coupsPossibles[i].first) + std::to_string(coupsPossibles[i].second);
                 }else{
                     // on verifie que le coup est dans le vecteur movesStruct
-                    comparateur = etatPartie + "." + std::to_string(j.coups_possibles()[i].first) + std::to_string(j.coups_possibles()[i].second);
+                    comparateur = etatPartie + "." + std::to_string(coupsPossibles[i].first) + std::to_string(coupsPossibles[i].second);
                 }
                 if (elem.id == comparateur) {
                     // si vous voulez regarder les qubc de chaque coup
-                    //std::cout << "qubc : " << qubc(elem.score, elem.nbPartie, taille) << " pour le coup : " << j.coups_possibles()[i].first << j.coups_possibles()[i].second << std::endl;
+                    //std::cout << "qubc : " << qubc(elem.score, elem.nbPartie, taille) << " pour le coup : " << coupsPossibles[i].first << coupsPossibles[i].second << std::endl;
                     // std::cout<<"qubc de : "<<elem.id<<" : "<<qubc(elem.score,nbPartiePere,elem.nbPartie)<<std::endl;
                     // si le joueur est premier inversé le score
                     int score = elem.score;
                     if (qubc(score,nbPartiePere,elem.nbPartie) > max) {
                         max = qubc(elem.score,nbPartiePere,elem.nbPartie);
                         // maj a jour du meilleur coup
-                        coup.first=j.coups_possibles()[i].first;
-                        coup.second=j.coups_possibles()[i].second;
+                        coup.first=coupsPossibles[i].first;
+                        coup.second=coupsPossibles[i].second;
                     }
                 }
             }
