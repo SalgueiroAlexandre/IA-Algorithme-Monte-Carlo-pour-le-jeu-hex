@@ -25,4 +25,5 @@ private:
   std::vector<std::string> moves;
   std::vector<coupStruct> movesStruct;
   static std::string etatPartie;
+  
 };

@@ -41,85 +41,72 @@ void Guezmer::majEtatPartie(couple coup,int tour) {
 }
 
 bool Guezmer::coupEstConnu(couple coup) const {
-    for (const auto& elem : movesStruct) {
-        // si etatPartie est inferieur ou egal a 1
-        if(etatPartie.size() <= 1){
-            // on verifie que le coup est dans le vecteur movesStruct
-            if (elem.id == std::to_string(coup.first) + std::to_string(coup.second)) {
-                return true;
-            }
-        }else{
-            // on verifie que le coup est dans le vecteur movesStruct
-            if (elem.id == etatPartie + "." + std::to_string(coup.first) + std::to_string(coup.second)) {
-                return true;
-            }
-        }
+    std::string coup_id;
+    if(etatPartie.size() <= 1) {
+        coup_id = std::to_string(coup.first) + std::to_string(coup.second);
+    } else {
+        coup_id = etatPartie + "." + std::to_string(coup.first) + std::to_string(coup.second);
     }
-    return false;
+    return std::any_of(movesStruct.begin(), movesStruct.end(), [&](const auto& elem) {
+        return elem.id == coup_id;
+    });
 }
 
 
 
-void Guezmer::recherche_coup(Jeu j, couple &coup)
+void Guezmer::recherche_coup(Jeu j, couple& coup)
 {
     bool toutLesCoupsSontConnus = true;
     auto coupsPossibles = j.coups_possibles();
     int taille = coupsPossibles.size();
-    std::cout << std::endl;
-    std::vector<couple> coupsInconnus;
-    
+    int inconnu_count = 0;
+
     // boucle sur tous les coups possibles
     for (int i = 0; i < taille; i++) {
-        // si le coup n'est pas connu par montecarlo on le joue
         if (!coupEstConnu(coupsPossibles[i])) {
             toutLesCoupsSontConnus = false;
-            coupsInconnus.push_back(coupsPossibles[i]);
+            if (rand() % ++inconnu_count == 0) {
+                coup.first = coupsPossibles[i].first;
+                coup.second = coupsPossibles[i].second;
+            }
         }
     }
 
-    if(!toutLesCoupsSontConnus){
-        // on joue un coup inconnu aleatoirement
-        int random = rand() % (coupsInconnus.size());
-        coup.first = coupsInconnus[random].first;
-        coup.second = coupsInconnus[random].second;
-        std::cout<< "coup inconnu  aleatoirement jouer : " << coup.first << coup.second << std::endl;
+    if (!toutLesCoupsSontConnus) {
+        std::cout << "coup inconnu aleatoirement jouer : " << coup.first << coup.second << std::endl;
         return;
     }
-    
-    // si tous les coups sont connus on utilise le qubc pour connaitre le meilleur coup
-    if (toutLesCoupsSontConnus) {
-        std::cout<< "tous les coups sont connus" << std::endl;
-        float max = 0;
-        int nbPartiePere = 0;
-        for (int i = 0; i < taille; i++) {
-            for (const auto& elem : movesStruct) {
-                // on prend en compte que l'etatPartie est l'idPere 
-                //pour rceuperer le nombre de partie du pere
-                if(elem.id == etatPartie){
-                    nbPartiePere = elem.nbPartie;
+
+    std::cout << "tous les coups sont connus" << std::endl;
+    float max = 0;
+    int nbPartiePere = 0;
+    for (int i = 0; i < taille; i++) {
+        for (const auto& elem : movesStruct) {
+            if (elem.id == etatPartie) {
+                nbPartiePere = elem.nbPartie;
+            }
+            std::string comparateur;
+            if (etatPartie.size() <= 1) {
+                comparateur = std::to_string(coupsPossibles[i].first) + std::to_string(coupsPossibles[i].second);
+            } else {
+                comparateur = etatPartie + "." + std::to_string(coupsPossibles[i].first) + std::to_string(coupsPossibles[i].second);
+            }
+            if (elem.id == comparateur) {
+                int score = elem.score;
+                if (!joueur()) {
+                    score = -score;
                 }
-                std::string comparateur;
-                // si etatPartie est inferieur ou egal a 1
-                if(etatPartie.size() <= 1){
-                    // on verifie que le coup est dans le vecteur movesStruct
-                    comparateur = std::to_string(coupsPossibles[i].first) + std::to_string(coupsPossibles[i].second);
-                }else{
-                    // on verifie que le coup est dans le vecteur movesStruct
-                    comparateur = etatPartie + "." + std::to_string(coupsPossibles[i].first) + std::to_string(coupsPossibles[i].second);
-                }
-                if (elem.id == comparateur) {
-                    int score = elem.score;
-                    if (qubc(score,nbPartiePere,elem.nbPartie) > max) {
-                        max = qubc(elem.score,nbPartiePere,elem.nbPartie);
-                        // maj a jour du meilleur coup
-                        coup.first=coupsPossibles[i].first;
-                        coup.second=coupsPossibles[i].second;
-                    }
+                float q = qubc(score, nbPartiePere, elem.nbPartie);
+                if (q > max) {
+                    max = q;
+                    coup.first = coupsPossibles[i].first;
+                    coup.second = coupsPossibles[i].second;
                 }
             }
         }
     }
 }
+
 
 float Guezmer::qubc(float score, int nbPartiePere, int nbPartieFils) {
     if(nbPartiePere == 0){
