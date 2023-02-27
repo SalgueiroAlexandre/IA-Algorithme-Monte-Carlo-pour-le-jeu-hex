@@ -73,11 +73,9 @@ void Guezmer::recherche_coup(Jeu j, couple& coup)
     }
 
     if (!toutLesCoupsSontConnus) {
-        std::cout << "coup inconnu aleatoirement jouer : " << coup.first << coup.second << std::endl;
         return;
     }
 
-    std::cout << "tous les coups sont connus" << std::endl;
     float max = 0;
     int nbPartiePere = 0;
     for (int i = 0; i < taille; i++) {
@@ -93,9 +91,6 @@ void Guezmer::recherche_coup(Jeu j, couple& coup)
             }
             if (elem.id == comparateur) {
                 int score = elem.score;
-                if (!joueur()) {
-                    score = -score;
-                }
                 float q = qubc(score, nbPartiePere, elem.nbPartie);
                 if (q > max) {
                     max = q;
@@ -115,7 +110,7 @@ float Guezmer::qubc(float score, int nbPartiePere, int nbPartieFils) {
     if(!joueur()){ // si je suis le joueur 2
         score = score * -1;
     }
-    return (score / nbPartieFils) + sqrt((1 * log(nbPartiePere))/(nbPartieFils));
+    return (score / nbPartieFils) + sqrt((1.5 * log(nbPartiePere))/(nbPartieFils));
 }
 
 bool Guezmer::compareMoyscore(const coupStruct& a, const coupStruct& b) {

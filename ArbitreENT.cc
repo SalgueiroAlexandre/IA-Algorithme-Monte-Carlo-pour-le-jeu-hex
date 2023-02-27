@@ -128,7 +128,7 @@ result ArbitreENT::partie()
         _coups[_numero_partie - 1].second = -1;
         coup_ok = true;
         tour++;
-        std::cout << "tour : " << tour << std::endl;
+        // std::cout << "tour : " << tour << std::endl;
         (tour % 2 ? _joueur1->jouer(_jeu, _coups[_numero_partie - 1], _coups_mutex[_numero_partie - 1]) : _joueur2->jouer(_jeu, _coups[_numero_partie - 1], _coups_mutex[_numero_partie - 1]));
         
         if (_jeu.case_libre(_coups[_numero_partie - 1]) == false)
@@ -157,8 +157,8 @@ result ArbitreENT::partie()
         lecteur.addMove(_coups[_numero_partie - 1].first, _coups[_numero_partie - 1].second);
         Guezmer::majEtatPartie(_coups[_numero_partie - 1], tour);
 
-        std::cout << ((tour % 2) ? _joueur1->nom() : _joueur2->nom()) << " abs : " << _coups[_numero_partie - 1].second << " ord : " << _coups[_numero_partie - 1].first
-                  << std::endl;
+        //std::cout << ((tour % 2) ? _joueur1->nom() : _joueur2->nom()) << " abs : " << _coups[_numero_partie - 1].second << " ord : " << _coups[_numero_partie - 1].first
+        //          << std::endl;
                   //<< _jeu << std::endl; // AFFICHAGE DU JEU
     }
 
