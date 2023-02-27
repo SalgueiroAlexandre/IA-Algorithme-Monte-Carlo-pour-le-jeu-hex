@@ -142,10 +142,12 @@ void Guezmer::recherche_coup2(Jeu j, couple &coup){
     std::cout<<"coup le plus interessant : "<<coupsInteressant[0].id<<", "<<coupsInteressant[0].score<<", "<<coupsInteressant[0].nbPartie<<std::endl;
 }
 
+
 void Guezmer::bloquer(Jeu j,couple &coup){
 
     //récuperer les derneir caractère de l'etatPartie après le dernier point
-    std::string derniercoups = etatPartie.substr(etatPartie.rfind(".") + 1);
+    std::string derniercoups = "";
+    derniercoups = etatPartie.substr(etatPartie.rfind(".") + 1);
     std::cout<<"derniercoups : "<<derniercoups<<std::endl;
     int x = 0;
     int y = 0;
@@ -184,11 +186,14 @@ void Guezmer::bloquer(Jeu j,couple &coup){
         for(int i =-1; i<=1;i++){
             for (int k = -1; k <=1; k++)
             {
-                if(i!=0 && k!=0){
-                    if(x+i>=0 && y+k >=0)
+                if((i != 0) || (k != 0)){
+                    if(x+i >= 0 && y+k >= 0 && x+i <= 10 && y+k <= 10)
                     {
                         couple c(y+k,x+i);
-                        if(j.case_libre(c)){
+                        std::vector<std::vector<int>> g = j.grille();
+                        std::cout<<"g["<<x+i<<","<<y+k<<"] : "<<g[y+k][x+i]<<std::endl;
+                        if(g[y+k][x+i]==0)
+                        {
                             coups_adjacent.push_back(c);
                         }
                     
@@ -203,16 +208,22 @@ void Guezmer::bloquer(Jeu j,couple &coup){
 
             std::cout<<"coup adjacent : "<<elem.first<<", "<<elem.second<<std::endl;
         }
-        int random = rand() % (coups_adjacent.size());
-        coup.first = coups_adjacent[random].first;
-        coup.second = coups_adjacent[random].second;
-        //cout coup
+        if(coups_adjacent.size()!=0){
+            int random = rand() % (coups_adjacent.size());
+            coup.first = coups_adjacent[random].first;
+            coup.second = coups_adjacent[random].second;
+        }
+        else
+        {
+            int taille = j.coups_possibles().size();
+            int num = rand()%(taille);
+            coup.first=j.coups_possibles()[num].first;
+            coup.second=j.coups_possibles()[num].second;
+        }
         std::cout<<"coup : "<<coup.first<<", "<<coup.second<<std::endl;
-
 
     }
 
 
 
 }
-
