@@ -20,66 +20,68 @@ bool compare(const std::string& a, const std::string& b) {
     return a < b;
 }
 
-int Lecteur::ecrire(int result){
+int Lecteur::ecrire(int result) {
+    // Ouvrir le fichier en mode lecture
     std::ifstream readFile(nomFichier);
     if (!readFile.is_open()) {
         std::cout << "Impossible d'ouvrir le fichier." << std::endl;
         return 1;
     }
-    // Lire toutes les lignes dans le fichier et les stocker dans fichierStock
+    // Lire toutes les lignes dans le fichier et les stocker dans un vecteur
     std::vector<std::string> fichierStock;
     std::string line;
     while (std::getline(readFile, line)) {
         fichierStock.push_back(line);
     }
     readFile.close();
-    // Ouvrir le fichier en mode écriture
-    std::ofstream file(nomFichier, std::ios::trunc);
-    if (!file.is_open()) {
-        std::cout << "Impossible d'ouvrir le fichier." << std::endl;
-        return 1;
-    }
+
     // Parcourir toutes les entrées dans moves
-    for (std::vector<Move>::size_type i = 0; i < moves.size();i++) {
-        bool found = false;
-        // Parcourir fichierStock pour trouver une entrée correspondante
-        for (std::vector<std::string>::size_type j = 1; j < fichierStock.size(); j++) {
-            std::string firstPart = fichierStock[j].substr(0, fichierStock[j].find(","));
-            if (firstPart == moves[i].ID) {
-                found = true;
-                // Si une entrée correspondante est trouvée, la mettre à jour
-                std::string delimiter = ",";
-                std::string id = fichierStock[j].substr(0, fichierStock[j].find(delimiter));
-                std::string score = fichierStock[j].substr(fichierStock[j].find(delimiter) + 1, fichierStock[j].find(delimiter));
-                std::string nb = fichierStock[j].substr(fichierStock[j].rfind(delimiter) + 1);
-                int newScore = std::stoi(score) + result;
-                int newNb = std::stoi(nb) + 1;
-                fichierStock[j] = id + "," + std::to_string(newScore) + "," + std::to_string(newNb);
-                std::cout<< "\nROLLBACK sur " << id << " : nouveau score : " << newScore << "  nouveau nb parties : " << newNb << std::endl;
-            }
+    for (const auto& move : moves) {
+        // Chercher une entrée correspondante dans le vecteur du fichier
+        auto found = std::find_if(fichierStock.begin(), fichierStock.end(), [&](const auto& entry) {
+            std::string firstPart = entry.substr(0, entry.find(","));
+            return firstPart == move.ID;
+        });
+        if (found != fichierStock.end()) {
+            // Si une entrée correspondante est trouvée, la mettre à jour
+            std::string delimiter = ",";
+            std::string id = found->substr(0, found->find(delimiter));
+            std::string score = found->substr(found->find(delimiter) + 1, found->rfind(delimiter) - found->find(delimiter) - 1);
+            std::string nb = found->substr(found->rfind(delimiter) + 1);
+            int newScore = std::stoi(score) + result;
+            int newNb = std::stoi(nb) + 1;
+            *found = id + delimiter + std::to_string(newScore) + delimiter + std::to_string(newNb);
+            std::cout << "\nROLLBACK sur " << id << " : nouveau score : " << newScore << "  nouveau nb parties : " << newNb << std::endl;
         }
-        // Si aucune entrée correspondante n'a été trouvée, la créer
-        if (!found) {
-            fichierStock.push_back(moves[i].ID + "," + std::to_string(result) + "," + "1");
-            // clear the vector
-            std::cout << "\nAJOUT de " << moves[i].ID << " avec un score de " << result << std::endl;    
-            moves.clear();
+        else {
+            // Si aucune entrée correspondante n'a été trouvée, la créer
+            fichierStock.push_back(move.ID + "," + std::to_string(result) + ",1");
+            std::cout << "\nAJOUT de " << move.ID << " avec un score de " << result << std::endl;
             break;
         }
     }
-    // sort the vector
+
+    // Trier le vecteur mis à jour
     std::sort(fichierStock.begin(), fichierStock.end(), compare);
-    // écrire le fichier mis à jour
-    std::ofstream outputFile(nomFichier);
-    for (const auto &line : fichierStock) {
-        outputFile << line << std::endl;
+
+    // Ouvrir le fichier en mode écriture et écrire les modifications
+    std::ofstream outputFile(nomFichier, std::ios::trunc);
+    if (!outputFile.is_open()) {
+        std::cout << "Impossible d'ouvrir le fichier." << std::endl;
+        return 1;
+    }
+    for (const auto& line : fichierStock) {
+        outputFile << line << "\n";
     }
     outputFile.close();
-    // clear the vector
-    fichierStock.clear();
+
+    // Vider les vecteurs de mouvements et de stockage
     moves.clear();
+    fichierStock.clear();
+
     return 0;
 }
+
 
 int Lecteur::lire()
 {
