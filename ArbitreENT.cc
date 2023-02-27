@@ -120,51 +120,25 @@ int ArbitreENT::challenge()
 
 result ArbitreENT::partie()
 {
-    int TEMPS_POUR_UN_COUP(20000);
     int tour = 0;
     bool coup_ok; // si le coup est valide
     while (!_jeu.partie_finie())
     {
-        bool try_lock = false;
         _coups[_numero_partie - 1].first = -1;
         _coups[_numero_partie - 1].second = -1;
         coup_ok = true;
         tour++;
-        if (tour == 3)
-        {
-            TEMPS_POUR_UN_COUP = 200; // valeur a changer pour la ms
-        }
         std::cout << "tour : " << tour << std::endl;
-        _coups_mutex[_numero_partie - 1].unlock();
-
-        std::thread thread_joueur(&Joueur::jouer,
-                                  ((tour % 2) ? (_joueur1) : (_joueur2)),
-                                  _jeu,
-                                  std::ref(_coups[_numero_partie - 1]),
-                                  std::ref(_coups_mutex[_numero_partie - 1]));
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(TEMPS_POUR_UN_COUP));
-        //        std::this_thread::sleep_for (std::chrono::seconds(TEMPS_POUR_UN_COUP));
-
-        if (!_coups_mutex[_numero_partie - 1].try_lock())
-        {
-            Guezmer::resetEtatPartie();
-            std::cerr << std::endl
-                      << "mutex non rendu " << std::endl;
-            try_lock = true;
-            // arret du programme
-            // exit(1);
-        }
-        else if (_jeu.case_libre(_coups[_numero_partie - 1]) == false)
+        (tour % 2 ? _joueur1->jouer(_jeu, _coups[_numero_partie - 1], _coups_mutex[_numero_partie - 1]) : _joueur2->jouer(_jeu, _coups[_numero_partie - 1], _coups_mutex[_numero_partie - 1]));
+        
+        if (_jeu.case_libre(_coups[_numero_partie - 1]) == false)
         {
             Guezmer::resetEtatPartie();
             std::cerr << "coup invalide abs : " << _coups[_numero_partie - 1].second << " ,ord : " << _coups[_numero_partie - 1].first << std::endl;
             coup_ok = false;
         }
 
-        thread_joueur.detach();
-
-        if (try_lock || !coup_ok)
+        if (!coup_ok)
         {
             Guezmer::resetEtatPartie();
             if (tour % 2)
