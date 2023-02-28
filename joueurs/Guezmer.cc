@@ -30,6 +30,8 @@ Guezmer::Guezmer(std::string nom, bool joueur, std::string nomFichier)
         ss >> nbPartie; 
         movesStruct.push_back({id, score, nbPartie});
     }
+    // fermer le fichier
+    readFile.close();
 
 }
 

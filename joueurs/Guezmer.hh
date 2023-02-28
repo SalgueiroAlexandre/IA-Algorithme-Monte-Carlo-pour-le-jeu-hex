@@ -21,6 +21,7 @@ public:
   void recherche_coup2(Jeu j, couple & coup);
   bool compareMoyscore(const coupStruct& a, const coupStruct& b);
   void bloquer(Jeu j,couple &coup);
+  
 private:
   std::vector<std::string> moves;
   std::vector<coupStruct> movesStruct;
