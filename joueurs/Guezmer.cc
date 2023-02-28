@@ -110,7 +110,7 @@ float Guezmer::qubc(float score, int nbPartiePere, int nbPartieFils) {
     if(!joueur()){ // si je suis le joueur 2
         score = score * -1;
     }
-    return (score / nbPartieFils) + sqrt((1.5 * log(nbPartiePere))/(nbPartieFils));
+    return (score / nbPartieFils) + sqrt((1.2 * log(nbPartiePere))/(nbPartieFils));
 }
 
 bool Guezmer::compareMoyscore(const coupStruct& a, const coupStruct& b) {
