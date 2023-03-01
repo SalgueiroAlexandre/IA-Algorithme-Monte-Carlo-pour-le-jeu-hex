@@ -45,9 +45,6 @@ class ArbitreENT : public Arbitre
 {
 private:
 
-    Lecteur lecteur;
-    std::string fichierV0;
-
 public:
     /**
      * @brief Arbitre
@@ -55,7 +52,7 @@ public:
      * @param player2
      * @param nombre_parties
      */
-    ArbitreENT(player player1 , player player2, int nombre_parties,std::string fichierENT,std::string fichierV0);
+    ArbitreENT(player player1, player player2, int nombre_parties);
 
 
     void initialisation() override;

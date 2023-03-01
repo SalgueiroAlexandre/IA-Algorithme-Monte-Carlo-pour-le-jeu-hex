@@ -19,10 +19,10 @@ private:
     std::vector<Move> moves;
 public:
     Lecteur(std::string f);
-    int ecrire(int result);
-    int lire();
+    int lire(std::vector<std::string> & moves);
     void addMove(int x, int y);
     std::vector<Move> getMoves() const;
+    void write(std::vector<std::string> moves);
 };
 
 

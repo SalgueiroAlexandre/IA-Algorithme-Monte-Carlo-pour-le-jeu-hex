@@ -4,21 +4,21 @@
 #include <fstream>
 #include <cmath> 
 #include <sstream>
+#include <unordered_map>
 
 
-Guezmer::Guezmer(std::string nom, bool joueur, std::string nomFichier)
+Guezmer::Guezmer(std::string nom, bool joueur)
     :Joueur(nom,joueur)
 {
-    // remplie le vecteur moves avec les coups joués dans le fichier nomFichier
-    std::ifstream readFile(nomFichier);
-    if (!readFile.is_open()) {
-        std::cout << "Impossible d'ouvrir le fichier." << std::endl;
-    }
-    // Lire les coups du fichier
-    for(std::string line; getline(readFile, line);) {
-        moves.push_back(line);
-    }
+}
 
+// Initialisation de la variable statique
+std::string Guezmer::etatPartie = "";
+
+// Initialisation de la variable statique
+std::unordered_map<std::string, coupStruct> Guezmer::movesMap = {};
+
+void Guezmer::initMoves(std::vector<std::string> moves){
     for (const auto& elem : moves) {
         std::istringstream ss(elem);
         std::string id;
@@ -28,18 +28,47 @@ Guezmer::Guezmer(std::string nom, bool joueur, std::string nomFichier)
         ss >> score; 
         ss.ignore(); 
         ss >> nbPartie; 
-        movesStruct.push_back({id, score, nbPartie});
+        movesMap[id] = {id, score, nbPartie};
     }
-    // fermer le fichier
-    readFile.close();
-
 }
-
-// Initialisation de la variable statique
-std::string Guezmer::etatPartie = "";
 
 void Guezmer::majEtatPartie(couple coup,int tour) {
     tour == 1 ? etatPartie += std::to_string(coup.first) + std::to_string(coup.second) : etatPartie += "." + std::to_string(coup.first) + std::to_string(coup.second);
+}
+
+std::vector<std::string> Guezmer::getMoves() {
+    std::vector<std::string> moves;
+    for (const auto& [id, elem] : movesMap) {
+        moves.push_back(id + "," + std::to_string(elem.score) + "," + std::to_string(elem.nbPartie));
+    }
+    return moves;
+}
+
+void Guezmer::rollback(int result) {
+    std::vector<std::string> outputArray;
+    std::string currentSubString;
+    for (char c : etatPartie) {
+        if (c == '.') {
+            outputArray.push_back(currentSubString);
+            currentSubString += c;
+        } else {
+            currentSubString += c;
+        }
+    }
+    outputArray.push_back(currentSubString);
+    for(const auto & elem : outputArray) {
+        std::string id = elem;
+        auto it = movesMap.find(id);
+        if (it != movesMap.end()) {
+            it->second.nbPartie++;
+            it->second.score += result;
+            std::cout << "ROLLBACK sur " << it->first << " avec un score de " << it->second.score << " et un nombre de partie de " << it->second.nbPartie << std::endl;
+        } else {
+            movesMap[id] = {id, result, 1};
+            std::cout << "AJOUT de " << id << " avec un score de " << result << " et un nombre de partie de 1" << std::endl;
+            return;
+        }
+    }
 }
 
 bool Guezmer::coupEstConnu(couple coup) const {
@@ -49,11 +78,19 @@ bool Guezmer::coupEstConnu(couple coup) const {
     } else {
         coup_id = etatPartie + "." + std::to_string(coup.first) + std::to_string(coup.second);
     }
-    return std::any_of(movesStruct.begin(), movesStruct.end(), [&](const auto& elem) {
-        return elem.id == coup_id;
-    });
+    return movesMap.find(coup_id) != movesMap.end();
 }
 
+int Guezmer::nbPartiePere(std::string id){
+    if(etatPartie.size() <= 1) {
+        // return la taille de la map
+        return movesMap.size();
+    }else{
+        // return le nombre de partie du pere
+        std::string pere = id.substr(0, id.find_last_of("."));
+        return movesMap[pere].nbPartie;
+    }
+}
 
 
 void Guezmer::recherche_coup(Jeu j, couple& coup)
@@ -73,32 +110,26 @@ void Guezmer::recherche_coup(Jeu j, couple& coup)
             }
         }
     }
-
     if (!toutLesCoupsSontConnus) {
         return;
     }
-
     float max = 0;
-    int nbPartiePere = 0;
     for (int i = 0; i < taille; i++) {
-        for (const auto& elem : movesStruct) {
-            if (elem.id == etatPartie) {
-                nbPartiePere = elem.nbPartie;
-            }
-            std::string comparateur;
-            if (etatPartie.size() <= 1) {
-                comparateur = std::to_string(coupsPossibles[i].first) + std::to_string(coupsPossibles[i].second);
-            } else {
-                comparateur = etatPartie + "." + std::to_string(coupsPossibles[i].first) + std::to_string(coupsPossibles[i].second);
-            }
-            if (elem.id == comparateur) {
-                int score = elem.score;
-                float q = qubc(score, nbPartiePere, elem.nbPartie);
-                if (q > max) {
-                    max = q;
-                    coup.first = coupsPossibles[i].first;
-                    coup.second = coupsPossibles[i].second;
-                }
+        std::string comparateur;
+        if (etatPartie.size() <= 1) {
+            comparateur = std::to_string(coupsPossibles[i].first) + std::to_string(coupsPossibles[i].second);
+        } else {
+            comparateur = etatPartie + "." + std::to_string(coupsPossibles[i].first) + std::to_string(coupsPossibles[i].second);
+        }
+        auto it = movesMap.find(comparateur);
+        if (it != movesMap.end()) {
+            auto elem = it->second;
+            int score = elem.score;
+            float q = qubc(score, nbPartiePere(elem.id), elem.nbPartie);
+            if (q > max) {
+                max = q;
+                coup.first = coupsPossibles[i].first;
+                coup.second = coupsPossibles[i].second;
             }
         }
     }
@@ -106,15 +137,12 @@ void Guezmer::recherche_coup(Jeu j, couple& coup)
 
 
 float Guezmer::qubc(float score, int nbPartiePere, int nbPartieFils) {
-    if(nbPartiePere == 0){
-        nbPartiePere = moves.size();
-    }
     if(!joueur()){ // si je suis le joueur 2
         score = score * -1;
     }
-    return (score / nbPartieFils) + sqrt((1.2 * log(nbPartiePere))/(nbPartieFils));
+    return (score / nbPartieFils) + sqrt((2 * log(nbPartiePere))/(nbPartieFils));
 }
-
+/*
 bool Guezmer::compareMoyscore(const coupStruct& a, const coupStruct& b) {
     return a.score/static_cast<float>(a.nbPartie) > b.score/static_cast<float>(b.nbPartie);
 }
@@ -224,3 +252,4 @@ void Guezmer::bloquer(Jeu j,couple &coup){
 
 
 }
+*/
