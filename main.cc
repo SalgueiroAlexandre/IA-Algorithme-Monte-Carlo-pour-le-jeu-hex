@@ -24,7 +24,7 @@ int main()
     std::chrono::duration<double> elapsed_seconds = end - start;
 
     std::cout << "Temps d'execution : " << std::floor(elapsed_seconds.count() / 60) << " minutes "
-            << elapsed_seconds.count() - std::floor(elapsed_seconds.count() / 60) * 60 << " secondes" << std::endl;
+            << elapsed_seconds.count() - std::floor(elapsed_seconds.count() / 60) * 60 << " secondes" << "pour " << nb_parties << "games "<< std::endl;
 
 
 
