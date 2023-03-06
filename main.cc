@@ -13,7 +13,7 @@ int main()
     std::srand(std::time(nullptr));
     
     //création de l'Arbitre (joueur jouant en 1er la premiere partie, joueur jouant en 2eme celle-ci , nombre de parties)
-    ArbitreENT a (player::M_1,player::MANUEL,nb_parties);
+    ArbitreENT a (player::M_1,player::MANUEL2,nb_parties);
      //mesure du temps d'execution
     //mesure du temps d'execution
     std::chrono::time_point<std::chrono::system_clock> start, end;

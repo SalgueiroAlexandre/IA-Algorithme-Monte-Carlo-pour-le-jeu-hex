@@ -132,6 +132,9 @@ void Guezmer::choisirCoupNonConnu(const Jeu & j, couple& coup){
             coup.first = y-1;
             x = x-1;
             y = y;
+        }else{
+            // recuperation du dernier coup joué par l'adversaire
+            
         }
     }
     // affichage du coup
