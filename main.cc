@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include "ArbitreENT.hh"
 #include "jeu.hh"
@@ -9,12 +8,12 @@
 
 int main()
 {
-    int nb_parties = 1000000;
+    int nb_parties = 10000;
     //initialise la graine du générateur aléatoire
     std::srand(std::time(nullptr));
     
     //création de l'Arbitre (joueur jouant en 1er la premiere partie, joueur jouant en 2eme celle-ci , nombre de parties)
-    ArbitreENT a (player::M_1,player::M_2,nb_parties);
+    ArbitreENT a (player::M_1,player::MANUEL2,nb_parties);
      //mesure du temps d'execution
     //mesure du temps d'execution
     std::chrono::time_point<std::chrono::system_clock> start, end;

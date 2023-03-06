@@ -9,9 +9,11 @@ Jeu::Jeu(int taille)
 int Jeu::taille() const {
     return _taille;
 }
-
+//
 
 bool Jeu::case_libre(couple coup) const {
+    bool r = (coup_valide(coup) && (_grille[coup.first][coup.second] == 0));
+    std::cout << coup.first << " " << coup.second << " " << r << std::endl;
     return (coup_valide(coup) && (_grille[coup.first][coup.second] == 0));
 }
 

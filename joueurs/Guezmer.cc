@@ -10,6 +10,15 @@
 Guezmer::Guezmer(std::string nom, bool joueur)
     :Joueur(nom,joueur)
 {
+    if (joueur)
+    {
+        x = 5;
+        y = 0;
+    }else{
+        x = 0;
+        y = 5;
+    }
+    
 }
 
 // Initialisation de la variable statique
@@ -92,6 +101,46 @@ int Guezmer::nbPartiePere(std::string id){
     }
 }
 
+void Guezmer::recupererDernierCoup(const Jeu & j){
+    auto grille = j.grille();
+    int taille = grille.size();
+    // affichage de la grille
+    for (int i = 0; i < taille; i++) {
+        for (int j = 0; j < taille; j++) {
+            std::cout << grille[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
+}
+
+void Guezmer::choisirCoupNonConnu(const Jeu & j, couple& coup){
+    // si on est joueur 1 (de haut en bas)
+    if(joueur()){
+        if(j.case_libre(couple(y,x))){
+            coup.second = x;
+            coup.first = y;
+            x = x;
+            y = y + 1;
+        }else if(j.case_libre(couple(y-1,x+1))){
+            coup.second = x+1;
+            coup.first = y-1;
+            x = x+1;
+            y = y;
+        }else if (j.case_libre(couple(y-1,x-1)))
+        {
+            coup.second = x-1;
+            coup.first = y-1;
+            x = x-1;
+            y = y;
+        }else{
+            // recuperation du dernier coup joué par l'adversaire
+            
+        }
+    }
+    // affichage du coup
+    std::cout << "Coup non connu joué : " << coup.first << " " << coup.second << std::endl;
+}
+
 
 void Guezmer::recherche_coup(Jeu j, couple& coup)
 {
@@ -111,9 +160,10 @@ void Guezmer::recherche_coup(Jeu j, couple& coup)
         }
     }
     if (!toutLesCoupsSontConnus) {
+        choisirCoupNonConnu(j,coup);
         return;
     }
-    float max = 0;
+    float max = -10;
     for (int i = 0; i < taille; i++) {
         std::string comparateur;
         if (etatPartie.size() <= 1) {
@@ -140,7 +190,7 @@ float Guezmer::qubc(float score, int nbPartiePere, int nbPartieFils) {
     if(!joueur()){ // si je suis le joueur 2
         score = score * -1;
     }
-    return (score / nbPartieFils) + sqrt((1.8 * log(nbPartiePere))/(nbPartieFils));
+    return (score / nbPartieFils) + sqrt(0 * log(nbPartiePere)/(nbPartieFils));
 }
 
 bool Guezmer::compareMoyscore(const coupStruct& a, const coupStruct& b) {
