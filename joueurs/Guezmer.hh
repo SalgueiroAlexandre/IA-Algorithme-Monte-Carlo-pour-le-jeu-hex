@@ -23,10 +23,14 @@ public:
   static void rollback(int result);
   static std::vector<std::string> getMoves();
   static void initMoves(std::vector<std::string> moves);
+  void recupererDernierCoup(const Jeu & j);
   int nbPartiePere(std::string id);
+  void choisirCoupNonConnu(const Jeu & j, couple& coup);
 private:
   std::vector<std::string> _moves;
   static std::unordered_map<std::string, coupStruct> movesMap;
   static std::string etatPartie;
+  int x;
+  int y;
   
 };

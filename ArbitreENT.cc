@@ -1,5 +1,7 @@
 #include "ArbitreENT.hh"
 #include "./joueurs/Guezmer.hh"
+#include <iomanip> // Nécessaire pour std::setprecision
+
 
 ArbitreENT::ArbitreENT(player player1, player player2, int nombre_parties) 
 : Arbitre(player1, player2, nombre_parties)
@@ -105,9 +107,9 @@ int ArbitreENT::challenge()
         _numero_partie++;
         initialisation();
     }
-    std::cout << "FIN DU CHALLENGE\n\t"
-              << _joueur1->nom() << " gagne " << (victoire_joueur_1*100/_nombre_parties)<<"% winrate"
-              << "\n\t" << _joueur2->nom() << " gagne " << (victoire_joueur_2*100/_nombre_parties)<<"% winrate" << std::endl;
+std::cout << "FIN DU CHALLENGE\n\t"
+          << _joueur1->nom() << " gagne " << std::fixed << std::setprecision(2) << (static_cast<double>(victoire_joueur_1)*100/_nombre_parties)<<"% winrate"
+          << "\n\t" << _joueur2->nom() << " gagne " << std::fixed << std::setprecision(2) << (static_cast<double>(victoire_joueur_2)*100/_nombre_parties)<<"% winrate" << std::endl;
     l.write(Guezmer::getMoves());      
     
     if (_joueur1->nom() == "Guezmer")
@@ -156,9 +158,11 @@ result ArbitreENT::partie()
         _jeu.jouer_coup(_coups[_numero_partie - 1], (tour % 2) ? 1 : 2);
         Guezmer::majEtatPartie(_coups[_numero_partie - 1], tour);
 
-        //std::cout << ((tour % 2) ? _joueur1->nom() : _joueur2->nom()) << " abs : " << _coups[_numero_partie - 1].second << " ord : " << _coups[_numero_partie - 1].first
-        //          << std::endl;
-                  //<< _jeu << std::endl; // AFFICHAGE DU JEU
+        std::cout << ((tour % 2) ? _joueur1->nom() : _joueur2->nom()) << " abs : " << _coups[_numero_partie - 1].second << " ord : " << _coups[_numero_partie - 1].first
+                 << std::endl
+                << _jeu << std::endl; // AFFICHAGE DU JEU
+        // attendre 1 seconde
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
     }
 
     /*if (_jeu.partie_nulle())
