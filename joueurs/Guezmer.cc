@@ -22,7 +22,7 @@ void Guezmer::initMoves(std::vector<std::string> moves){
     for (const auto& elem : moves) {
         std::istringstream ss(elem);
         std::string id;
-        float score;
+        int score;
         int nbPartie;
         std::getline(ss, id, ',');  
         ss >> score; 
@@ -99,7 +99,7 @@ void Guezmer::recherche_coup(Jeu j, couple& coup)
     auto coupsPossibles = j.coups_possibles();
     int taille = coupsPossibles.size();
     int inconnu_count = 0;
-
+    Guezmer::recherche_coup2(j, coup);
     // boucle sur tous les coups possibles
     for (int i = 0; i < taille; i++) {
         if (!coupEstConnu(coupsPossibles[i])) {
@@ -142,32 +142,39 @@ float Guezmer::qubc(float score, int nbPartiePere, int nbPartieFils) {
     }
     return (score / nbPartieFils) + sqrt((1.8 * log(nbPartiePere))/(nbPartieFils));
 }
-/*
+
 bool Guezmer::compareMoyscore(const coupStruct& a, const coupStruct& b) {
     return a.score/static_cast<float>(a.nbPartie) > b.score/static_cast<float>(b.nbPartie);
 }
 
 
 void Guezmer::recherche_coup2(Jeu j, couple &coup){
-    std::string etat_parti_pre = etatPartie.substr(0, etatPartie.size() - 3);
+    std::string etat_parti_pre = etatPartie.substr(etatPartie.rfind(".") + 1);
     std::cout<<"etat_parti_pre : "<<etat_parti_pre<<std::endl;
-    std::vector<coupStruct> coupsInteressant;
-    for (const auto& elem : movesStruct){
-        std::string coup_prec = elem.id.substr(0, elem.id.size() - 3);
-        if (coup_prec == etat_parti_pre && elem.id.size()>2){
-            coupsInteressant.push_back(elem);
+    std::unordered_map<std::string, coupStruct> coupsInteressant;
+    for (const auto& elem : movesMap){
+        std::string coup_prec = elem.first.substr(0,elem.first.rfind("."));
+        if (coup_prec == etat_parti_pre && elem.second.nbPartie > 10){
+            coupsInteressant.insert(elem);
         }
     }
-    for(const auto& elem : coupsInteressant){
-        std::cout<<"coup : "<<elem.id<<" score : "<<elem.score<<std::endl;
+    std::vector<std::pair<std::string, coupStruct>> sortedMoves(coupsInteressant.begin(), coupsInteressant.end());
+    if(joueur()){
+          std::sort(sortedMoves.begin(), sortedMoves.end(), [](const auto& lhs, const auto& rhs){
+        return (lhs.second.score*100/lhs.second.nbPartie) > (rhs.second.score*100/rhs.second.nbPartie);
+        });
+
     }
-    std::sort(coupsInteressant.begin(), coupsInteressant.end(), [](const coupStruct& a, const coupStruct& b) {
-    return a.score/static_cast<float>(a.nbPartie) > b.score/static_cast<float>(b.nbPartie);});
-    // trier le vector en fonction du score
-    std::cout<<"coup le plus interessant : "<<coupsInteressant[0].id<<", "<<coupsInteressant[0].score<<", "<<coupsInteressant[0].nbPartie<<std::endl;
+    else{
+        std::sort(sortedMoves.begin(), sortedMoves.end(), [](const auto& lhs, const auto& rhs){
+            return (lhs.second.score*100/lhs.second.nbPartie) < (rhs.second.score*100/rhs.second.nbPartie);
+        });
+    }
+    if(!etatPartie.empty())
+        std::cout<<"le meilleur coups est : "<<sortedMoves[0].first<<std::endl;
 }
 
-
+/*
 void Guezmer::bloquer(Jeu j,couple &coup){
 
     //récuperer les derneir caractère de l'etatPartie après le dernier point
