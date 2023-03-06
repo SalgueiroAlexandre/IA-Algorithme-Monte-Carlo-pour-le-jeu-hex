@@ -132,9 +132,22 @@ void Guezmer::choisirCoupNonConnu(const Jeu & j, couple& coup){
             coup.first = y-1;
             x = x-1;
             y = y;
+
         }else{
             // recuperation du dernier coup joué par l'adversaire
-            
+            std::string derniercoups = "";
+            derniercoups = etatPartie.substr(etatPartie.rfind(".") + 1);
+            //std::cout<<"derniercoups : "<<derniercoups<<std::endl; 
+            int y1 = std::stoi(derniercoups.substr(0, 1));
+            int x1 = std::stoi(derniercoups.substr(1));
+            //je recupere le coup joué par l'adversaire et je le block
+            if(j.case_libre(couple(y1,x1+1))){
+                coup.second = x1+1;
+                coup.first = y1;  
+            }else if(x1>0 && j.case_libre(couple(y1,x1-1))){
+                coup.second = x1-1;
+                coup.first = y1;
+            }
         }
     }
     // affichage du coup
