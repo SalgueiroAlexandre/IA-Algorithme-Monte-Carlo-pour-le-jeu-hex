@@ -22,10 +22,10 @@ void Arbitre::initialisation()
     //si le numero de partie est pair, c'est _joueur1 qui commence
     switch (((_numero_partie%2)? _player1 : _player2)) {
         case player::M_1:
-            _joueur1 = std::make_shared<Joueur_MonteCarlo_> ("MonteCarlo",true);
+            _joueur1 = std::make_shared<Guezmer> ("MonteCarlo",true);
             break;
         case player::M_2:
-            _joueur1 = std::make_shared<Joueur_MonteCarlo_> ("StoMonteCarlo",true);
+            _joueur1 = std::make_shared<Guezmer> ("StoMonteCarlo",true);
             break;
         case player::MANUEL:
             _joueur1 = std::make_shared<Joueur_Manuel> ("Caro",true);
@@ -52,10 +52,10 @@ void Arbitre::initialisation()
     //si le numero de partie est impair, c'est _joueur2 qui commence
     switch (((!(_numero_partie%2))? _player1 : _player2)) {
         case player::M_1:
-            _joueur2 = std::make_shared<Joueur_MonteCarlo_> ("MonteCarlo",false);
+            _joueur2 = std::make_shared<Guezmer> ("MonteCarlo",false);
             break;
         case player::M_2:
-            _joueur2 = std::make_shared<Joueur_MonteCarlo_> ("StoMonteCarlo",false);
+            _joueur2 = std::make_shared<Guezmer> ("StoMonteCarlo",false);
             break;
         case player::MANUEL:
             _joueur2 = std::make_shared<Joueur_Manuel> ("Caro",false);

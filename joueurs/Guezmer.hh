@@ -15,15 +15,13 @@ public:
   void recherche_coup(Jeu j, couple & coup) override;
   float qubc(float score,int nbPartiePere,int nbPartieFils);
   bool coupEstConnu(couple coup) const;
-  static void majEtatPartie(couple coup,int tour);
-  static void resetEtatPartie(){etatPartie = "";};
-  void recherche_coup2(Jeu j, couple & coup);
+  static void majEtatPartie(Jeu j);
+  void resetEtatPartie(){etatPartie = "";};
   bool compareMoyscore(const coupStruct& a, const coupStruct& b);
   void bloquer(Jeu j,couple &coup);
   static void rollback(int result);
-  static std::vector<std::string> getMoves();
-  static void initMoves(std::vector<std::string> moves);
-  void recupererDernierCoup(const Jeu & j);
+  std::vector<std::string> getMoves();
+  static void initMoves();
   int nbPartiePere(std::string id);
   void choisirCoupNonConnu(const Jeu & j, couple& coup);
 private:
@@ -32,5 +30,4 @@ private:
   static std::string etatPartie;
   int x;
   int y;
-  
 };

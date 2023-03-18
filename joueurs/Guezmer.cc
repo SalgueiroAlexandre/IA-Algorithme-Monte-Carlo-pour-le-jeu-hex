@@ -1,4 +1,5 @@
 #include "Guezmer.hh"
+#include "../Lecteur.hh"
 #include <algorithm>
 #include <iostream>
 #include <fstream>
@@ -18,20 +19,22 @@ Guezmer::Guezmer(std::string nom, bool joueur)
         x = 0;
         y = 5;
     }
-    
+    etatPartie = "";
 }
 
-// Initialisation de la variable statique
+// initialisation de la map
+std::unordered_map<std::string, coupStruct> Guezmer::movesMap;
 std::string Guezmer::etatPartie = "";
 
-// Initialisation de la variable statique
-std::unordered_map<std::string, coupStruct> Guezmer::movesMap = {};
-
-void Guezmer::initMoves(std::vector<std::string> moves){
+void Guezmer::initMoves(){
+    std::vector<std::string> moves;
+    // creation du lecteur
+    Lecteur l("../coups.csv");
+    l.lire(moves);
     for (const auto& elem : moves) {
         std::istringstream ss(elem);
         std::string id;
-        int score;
+        float score;
         int nbPartie;
         std::getline(ss, id, ',');  
         ss >> score; 
@@ -41,8 +44,25 @@ void Guezmer::initMoves(std::vector<std::string> moves){
     }
 }
 
-void Guezmer::majEtatPartie(couple coup,int tour) {
-    tour == 1 ? etatPartie += std::to_string(coup.first) + std::to_string(coup.second) : etatPartie += "." + std::to_string(coup.first) + std::to_string(coup.second);
+void Guezmer::majEtatPartie(Jeu j) {
+    auto grille = j.grille();
+    // trouve le coup de la grille qui n'est pas dans etatPartie
+    for (int i = 0; i < 11; i++) {
+        for (int j = 0; j < 11; j++) {
+            if (grille[i][j] != 0) {
+                std::string id = std::to_string(i) + std::to_string(j);
+                if (etatPartie.find(id) == std::string::npos) {
+                    if (etatPartie.size() == 0) {
+                        etatPartie = id;
+                    } else {
+                        etatPartie += "." + id;
+                    }
+                    return;
+                }
+            }
+        }
+    }
+
 }
 
 std::vector<std::string> Guezmer::getMoves() {
@@ -64,6 +84,7 @@ void Guezmer::rollback(int result) {
             currentSubString += c;
         }
     }
+    etatPartie = "";
     outputArray.push_back(currentSubString);
     for(const auto & elem : outputArray) {
         std::string id = elem;
@@ -101,18 +122,6 @@ int Guezmer::nbPartiePere(std::string id){
     }
 }
 
-void Guezmer::recupererDernierCoup(const Jeu & j){
-    auto grille = j.grille();
-    int taille = grille.size();
-    // affichage de la grille
-    for (int i = 0; i < taille; i++) {
-        for (int j = 0; j < taille; j++) {
-            std::cout << grille[i][j] << " ";
-        }
-        std::cout << std::endl;
-    }
-}
-
 void Guezmer::choisirCoupNonConnu(const Jeu & j, couple& coup){
     // si on est joueur 1 (de haut en bas)
     if(joueur()){
@@ -121,23 +130,20 @@ void Guezmer::choisirCoupNonConnu(const Jeu & j, couple& coup){
             coup.first = y;
             x = x;
             y = y + 1;
+        }else if (j.case_libre(couple(y,x-1))){
+            coup.second = x-1;
+            coup.first = y;
+            x = x-1;
+            y = y+1;
         }else if(j.case_libre(couple(y-1,x+1))){
             coup.second = x+1;
             coup.first = y-1;
             x = x+1;
             y = y;
-        }else if (j.case_libre(couple(y-1,x-1)))
-        {
-            coup.second = x-1;
-            coup.first = y-1;
-            x = x-1;
-            y = y;
-
         }else{
-            // recuperation du dernier coup joué par l'adversaire
+           // recuperation du dernier coup joué par l'adversaire
             std::string derniercoups = "";
             derniercoups = etatPartie.substr(etatPartie.rfind(".") + 1);
-            //std::cout<<"derniercoups : "<<derniercoups<<std::endl; 
             int y1 = std::stoi(derniercoups.substr(0, 1));
             int x1 = std::stoi(derniercoups.substr(1));
             //je recupere le coup joué par l'adversaire et je le block
@@ -149,24 +155,56 @@ void Guezmer::choisirCoupNonConnu(const Jeu & j, couple& coup){
                 coup.first = y1;
             }
         }
+    }else{
+        // si on est joueur 2 (de gauche à droite)
+        if(j.case_libre(couple(y,x))){
+            coup.second = x;
+            coup.first = y;
+            x = x + 1;
+            y = y;
+        }else if (j.case_libre(couple(y-1,x))){
+            coup.second = x;
+            coup.first = y-1;
+            x = x+1;
+            y = y-1;
+        }else if(j.case_libre(couple(y+1,x))){
+            coup.second = x;
+            coup.first = y+1;
+            x = x+1;
+            y = y+1;
+        }else{
+            // recuperation du dernier coup joué par l'adversaire
+            std::string derniercoups = "";
+            derniercoups = etatPartie.substr(etatPartie.rfind(".") + 1);
+            int y1 = std::stoi(derniercoups.substr(0, 1));
+            int x1 = std::stoi(derniercoups.substr(1));
+            //je recupere le coup joué par l'adversaire et je le block
+            if(j.case_libre(couple(y1+1,x1))){
+                coup.second = x1;
+                coup.first = y1+1;  
+            }else if(y1>0 && j.case_libre(couple(y1-1,x1))){
+                coup.second = x1;
+                coup.first = y1-1;
+            }
+        }
     }
-    // affichage du coup
-    std::cout << "Coup non connu joué : " << coup.first << " " << coup.second << std::endl;
 }
 
 
 void Guezmer::recherche_coup(Jeu j, couple& coup)
 {
+    majEtatPartie(j);
     bool toutLesCoupsSontConnus = true;
     auto coupsPossibles = j.coups_possibles();
     int taille = coupsPossibles.size();
     int inconnu_count = 0;
-    Guezmer::recherche_coup2(j, coup);
+
     // boucle sur tous les coups possibles
     for (int i = 0; i < taille; i++) {
         if (!coupEstConnu(coupsPossibles[i])) {
             toutLesCoupsSontConnus = false;
             if (rand() % ++inconnu_count == 0) {
+                // on choisit un coup au hasard parmis les coups non connus par défaut, si la fonction choisirCoupNonConnu ne trouve pas de coup à jouer on joue un coup au hasard
                 coup.first = coupsPossibles[i].first;
                 coup.second = coupsPossibles[i].second;
             }
@@ -174,6 +212,7 @@ void Guezmer::recherche_coup(Jeu j, couple& coup)
     }
     if (!toutLesCoupsSontConnus) {
         choisirCoupNonConnu(j,coup);
+        etatPartie == "" ? etatPartie = std::to_string(coup.first) + std::to_string(coup.second) : etatPartie = etatPartie + "." + std::to_string(coup.first) + std::to_string(coup.second);
         return;
     }
     float max = -10;
@@ -193,6 +232,9 @@ void Guezmer::recherche_coup(Jeu j, couple& coup)
                 max = q;
                 coup.first = coupsPossibles[i].first;
                 coup.second = coupsPossibles[i].second;
+                // maj de l'etat de la partie
+                etatPartie == "" ? etatPartie = std::to_string(coup.first) + std::to_string(coup.second) : etatPartie = etatPartie + "." + std::to_string(coup.first) + std::to_string(coup.second);
+                std::cout << "coup joué connu : " << coup.first << coup.second << std::endl;
             }
         }
     }
@@ -201,125 +243,8 @@ void Guezmer::recherche_coup(Jeu j, couple& coup)
 
 float Guezmer::qubc(float score, int nbPartiePere, int nbPartieFils) {
     if(!joueur()){ // si je suis le joueur 2
-        score = score * -1;
+        score = score * -1; // principe de negamax
     }
+    // coeficient de découverte mis à 0 pour le challenge
     return (score / nbPartieFils) + sqrt(0 * log(nbPartiePere)/(nbPartieFils));
 }
-
-bool Guezmer::compareMoyscore(const coupStruct& a, const coupStruct& b) {
-    return a.score/static_cast<float>(a.nbPartie) > b.score/static_cast<float>(b.nbPartie);
-}
-
-
-void Guezmer::recherche_coup2(Jeu j, couple &coup){
-    std::string etat_parti_pre = etatPartie.substr(etatPartie.rfind(".") + 1);
-    std::cout<<"etat_parti_pre : "<<etat_parti_pre<<std::endl;
-    std::unordered_map<std::string, coupStruct> coupsInteressant;
-    for (const auto& elem : movesMap){
-        std::string coup_prec = elem.first.substr(0,elem.first.rfind("."));
-        if (coup_prec == etat_parti_pre && elem.second.nbPartie > 10){
-            coupsInteressant.insert(elem);
-        }
-    }
-    std::vector<std::pair<std::string, coupStruct>> sortedMoves(coupsInteressant.begin(), coupsInteressant.end());
-    if(joueur()){
-          std::sort(sortedMoves.begin(), sortedMoves.end(), [](const auto& lhs, const auto& rhs){
-        return (lhs.second.score*100/lhs.second.nbPartie) > (rhs.second.score*100/rhs.second.nbPartie);
-        });
-
-    }
-    else{
-        std::sort(sortedMoves.begin(), sortedMoves.end(), [](const auto& lhs, const auto& rhs){
-            return (lhs.second.score*100/lhs.second.nbPartie) < (rhs.second.score*100/rhs.second.nbPartie);
-        });
-    }
-    if(!etatPartie.empty())
-        std::cout<<"le meilleur coups est : "<<sortedMoves[0].first<<std::endl;
-}
-
-/*
-void Guezmer::bloquer(Jeu j,couple &coup){
-
-    //récuperer les derneir caractère de l'etatPartie après le dernier point
-    std::string derniercoups = "";
-    derniercoups = etatPartie.substr(etatPartie.rfind(".") + 1);
-    std::cout<<"derniercoups : "<<derniercoups<<std::endl;
-    int x = 0;
-    int y = 0;
-    if (!etatPartie.empty())
-    {
-        if (derniercoups.size() == 2){
-            y = std::stoi(derniercoups.substr(0, 1));
-            x = std::stoi(derniercoups.substr(1));
-        }
-        else{
-            if (derniercoups.size() == 3)
-            {
-                if(derniercoups.substr(1)=="10")
-                {
-                    x = std::stoi(derniercoups.substr(1));
-                    y = std::stoi(derniercoups.substr(0,1));
-                }
-                else
-                {
-                    x = std::stoi(derniercoups.substr(2));
-                    y = std::stoi(derniercoups.substr(0,2));
-                }
-            }
-            else
-            {
-                y = std::stoi(derniercoups.substr(0, 2));
-                x = std::stoi(derniercoups.substr(2));
-            }
-        
-        }
-    }
-    std::cout<<"x : "<<x<<", y : "<<y<<std::endl;
-
-   if(etatPartie!=""){ //1er = bloqué en le 2eme donc en ligne en haut ou au dessus
-        std::vector<couple> coups_adjacent;
-        for(int i =-1; i<=1;i++){
-            for (int k = -1; k <=1; k++)
-            {
-                if((i != 0) || (k != 0)){
-                    if(x+i >= 0 && y+k >= 0 && x+i <= 10 && y+k <= 10)
-                    {
-                        couple c(y+k,x+i);
-                        std::vector<std::vector<int>> g = j.grille();
-                        std::cout<<"g["<<x+i<<","<<y+k<<"] : "<<g[y+k][x+i]<<std::endl;
-                        if(g[y+k][x+i]==0)
-                        {
-                            coups_adjacent.push_back(c);
-                        }
-                    
-                    }
-                }
-                
-            }
-            
-        }
-        //cout vector coup adjacent	
-        for (const auto& elem : coups_adjacent){
-
-            std::cout<<"coup adjacent : "<<elem.first<<", "<<elem.second<<std::endl;
-        }
-        if(coups_adjacent.size()!=0){
-            int random = rand() % (coups_adjacent.size());
-            coup.first = coups_adjacent[random].first;
-            coup.second = coups_adjacent[random].second;
-        }
-        else
-        {
-            int taille = j.coups_possibles().size();
-            int num = rand()%(taille);
-            coup.first=j.coups_possibles()[num].first;
-            coup.second=j.coups_possibles()[num].second;
-        }
-        std::cout<<"coup : "<<coup.first<<", "<<coup.second<<std::endl;
-
-    }
-
-
-
-}
-*/

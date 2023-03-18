@@ -1,32 +1,18 @@
 #include <iostream>
 #include "ArbitreENT.hh"
+#include "Arbitre.hh"
+#include "./joueurs/Guezmer.hh"
 #include "jeu.hh"
-#include "lecteur.hh"
-#include <cmath> // Ajout nécessaire
 
 
 
 int main()
 {
     int nb_parties = 10000;
-    //initialise la graine du générateur aléatoire
+    Guezmer::initMoves();
     std::srand(std::time(nullptr));
-    
-    //création de l'Arbitre (joueur jouant en 1er la premiere partie, joueur jouant en 2eme celle-ci , nombre de parties)
-    ArbitreENT a (player::M_1,player::MANUEL2,nb_parties);
-     //mesure du temps d'execution
-    //mesure du temps d'execution
-    std::chrono::time_point<std::chrono::system_clock> start, end;
-    start = std::chrono::system_clock::now();
+    Arbitre a (player::RAND2,player::M_1,nb_parties);
+    // ArbitreENT a (player::RAND2,player::M_1,nb_parties); => arbitre utiliser pour l'entrainement du monte carlo
     int r = a.challenge();
-    end = std::chrono::system_clock::now();
-    std::chrono::duration<double> elapsed_seconds = end - start;
-
-    std::cout << "Temps d'execution : " << std::floor(elapsed_seconds.count() / 60) << " minutes "
-            << elapsed_seconds.count() - std::floor(elapsed_seconds.count() / 60) * 60 << " secondes" << "pour " << nb_parties << "games "<< std::endl;
-
-
-
-   return r;
-
+    return r;
 }

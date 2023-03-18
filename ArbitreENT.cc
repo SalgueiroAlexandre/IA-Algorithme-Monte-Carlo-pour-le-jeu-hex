@@ -79,11 +79,6 @@ int ArbitreENT::challenge()
               << " commence. " << std::endl;
     int victoire_joueur_1 = 0;
     int victoire_joueur_2 = 0;
-    std::vector<std::string> moves;
-    // creation du lecteur
-    Lecteur l("../coups.csv");
-    l.lire(moves);
-    Guezmer::initMoves(moves);
     while (_numero_partie <= _nombre_parties)
     {
         std::cout << "\n"
@@ -95,29 +90,28 @@ int ArbitreENT::challenge()
         {
             std::cerr << "Alerte bug. Sauvez votre terminal et prévenez Me Devred. Merci. " << std::endl;
             return 1;
-        }
-        else if (resultat != result::NULLE){
-            if(resultat == result::P1)
-                victoire_joueur_1++;
-            else
-                victoire_joueur_2++;
-        }
+        } else if (resultat != result::NULLE)
+                (resultat==result::P1?
+                        ((_numero_partie%2)?
+                             victoire_joueur_1++
+                           :
+                             victoire_joueur_2++ )
+                      :
+                        (!(_numero_partie%2)?
+                             victoire_joueur_1++
+                           :
+                             victoire_joueur_2++ ));
                 
         //std::this_thread::sleep_for(std::chrono::milliseconds(100)); // temps de latence entre deux parties
         _numero_partie++;
         initialisation();
     }
 std::cout << "FIN DU CHALLENGE\n\t"
-          << _joueur1->nom() << " gagne " << std::fixed << std::setprecision(2) << (static_cast<double>(victoire_joueur_1)*100/_nombre_parties)<<"% winrate"
+         << _joueur1->nom() << " gagne " << std::fixed << std::setprecision(2) << (static_cast<double>(victoire_joueur_1)*100/_nombre_parties)<<"% winrate"
           << "\n\t" << _joueur2->nom() << " gagne " << std::fixed << std::setprecision(2) << (static_cast<double>(victoire_joueur_2)*100/_nombre_parties)<<"% winrate" << std::endl;
-    l.write(Guezmer::getMoves());      
     
-    if (_joueur1->nom() == "Guezmer")
-    {
-        return victoire_joueur_1;
-    }
-    else
-        return victoire_joueur_2;
+    
+    return 0;
 }
 
 result ArbitreENT::partie()
@@ -135,14 +129,13 @@ result ArbitreENT::partie()
         
         if (_jeu.case_libre(_coups[_numero_partie - 1]) == false)
         {
-            Guezmer::resetEtatPartie();
             std::cerr << "coup invalide abs : " << _coups[_numero_partie - 1].second << " ,ord : " << _coups[_numero_partie - 1].first << std::endl;
             coup_ok = false;
         }
 
         if (!coup_ok)
         {
-            Guezmer::resetEtatPartie();
+
             if (tour % 2)
             {
                 std::cout << _joueur2->nom() << " gagne ! Nombre de tours : " << tour << std::endl;
@@ -156,13 +149,11 @@ result ArbitreENT::partie()
         }
         // On joue le coup, on l'affiche et on affiche le plateau
         _jeu.jouer_coup(_coups[_numero_partie - 1], (tour % 2) ? 1 : 2);
-        Guezmer::majEtatPartie(_coups[_numero_partie - 1], tour);
 
-        std::cout << ((tour % 2) ? _joueur1->nom() : _joueur2->nom()) << " abs : " << _coups[_numero_partie - 1].second << " ord : " << _coups[_numero_partie - 1].first
-                 << std::endl
-                << _jeu << std::endl; // AFFICHAGE DU JEU
-        // attendre 1 seconde
-        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+        //std::cout << ((tour % 2) ? _joueur1->nom() : _joueur2->nom()) << " abs : " << _coups[_numero_partie - 1].second << " ord : " << _coups[_numero_partie - 1].first
+        //         << std::endl
+        //       << _jeu << std::endl; // AFFICHAGE DU JEU
+        // attendre 1 seconde 
     }
 
     /*if (_jeu.partie_nulle())
@@ -174,7 +165,6 @@ result ArbitreENT::partie()
     if (_jeu.cotes_relies() == 1)
     {
         Guezmer::rollback(1);
-        Guezmer::resetEtatPartie();
         std::cout << std::endl
                   << _joueur1->nom() << " gagne. Nombre de tours : " << tour << std::endl;
         return result::P1;
@@ -182,11 +172,9 @@ result ArbitreENT::partie()
     else if (_jeu.cotes_relies() == 2)
     {
         Guezmer::rollback(-1);
-        Guezmer::resetEtatPartie();
         std::cout << std::endl
                   << _joueur2->nom() << " gagne. Nombre de tours : " << tour << std::endl;
         return result::P2;
     }
-    Guezmer::resetEtatPartie();
     return result::ERREUR;
 }
