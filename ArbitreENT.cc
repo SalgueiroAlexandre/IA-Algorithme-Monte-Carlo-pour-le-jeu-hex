@@ -164,6 +164,7 @@ result ArbitreENT::partie()
     else */
     if (_jeu.cotes_relies() == 1)
     {
+        //appel de la fonction rollback avec 1 car guezmer a gagné
         Guezmer::rollback(1);
         std::cout << std::endl
                   << _joueur1->nom() << " gagne. Nombre de tours : " << tour << std::endl;
@@ -171,6 +172,7 @@ result ArbitreENT::partie()
     }
     else if (_jeu.cotes_relies() == 2)
     {
+        //appel de la fonction rollback avec 1 car guezmer 1 à perdu
         Guezmer::rollback(-1);
         std::cout << std::endl
                   << _joueur2->nom() << " gagne. Nombre de tours : " << tour << std::endl;
