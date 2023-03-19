@@ -8,6 +8,11 @@
 #include <unordered_map>
 
 
+/**
+ * @brief Constreur de la classe Guezmer qui initialise les variables etatPartie à vide pour stocké les coups qui sont joués durant la partie
+ * et les coordonnées de départ de la stratégie si le coup n'est pas connu dans le csv
+ *
+*/
 Guezmer::Guezmer(std::string nom, bool joueur)
     :Joueur(nom,joueur)
 {
@@ -26,6 +31,10 @@ Guezmer::Guezmer(std::string nom, bool joueur)
 std::unordered_map<std::string, coupStruct> Guezmer::movesMap;
 std::string Guezmer::etatPartie = "";
 
+/**
+ * @brief Fonction qui de récuperer les données de notre csv et les stocks dans une map
+ * 
+ */
 void Guezmer::initMoves(){
     std::vector<std::string> moves;
     // creation du lecteur
@@ -44,6 +53,11 @@ void Guezmer::initMoves(){
     }
 }
 
+/**
+ * @brief Fonction qui met à jour l'était de la partie en stockant les coups joués
+ * 
+ * @return std::string 
+ */
 void Guezmer::majEtatPartie(Jeu j) {
     auto grille = j.grille();
     // trouve le coup de la grille qui n'est pas dans etatPartie
@@ -65,6 +79,10 @@ void Guezmer::majEtatPartie(Jeu j) {
 
 }
 
+/**
+ * @brief Fonction qui permet de choisir le meilleur coup à jouer en fonction de la map
+ *  
+ */
 std::vector<std::string> Guezmer::getMoves() {
     std::vector<std::string> moves;
     for (const auto& [id, elem] : movesMap) {
@@ -73,6 +91,11 @@ std::vector<std::string> Guezmer::getMoves() {
     return moves;
 }
 
+/**
+ * @brief Fonction qui permet d'effectuer le rollback en cas de victoire ou de défaite sur les coups qui ont était joué durant la partie
+ * qui sont déjà présent dans le csv 
+ *  
+ */
 void Guezmer::rollback(int result) {
     std::vector<std::string> outputArray;
     std::string currentSubString;
@@ -101,6 +124,10 @@ void Guezmer::rollback(int result) {
     }
 }
 
+/**
+ * @brief Fonction qui permet de vérifier si le coup est connu dans le csv
+ *  
+ */
 bool Guezmer::coupEstConnu(couple coup) const {
     std::string coup_id;
     if(etatPartie.size() <= 1) {
@@ -111,6 +138,10 @@ bool Guezmer::coupEstConnu(couple coup) const {
     return movesMap.find(coup_id) != movesMap.end();
 }
 
+/**
+ * @brief Fonction qui permet de récuperer le nombre e partie du père d'un coup
+ *  @param id : id du coup pour lequelle on veut le nombre de partie du père
+ */
 int Guezmer::nbPartiePere(std::string id){
     if(etatPartie.size() <= 1) {
         // return la taille de la map
@@ -122,6 +153,10 @@ int Guezmer::nbPartiePere(std::string id){
     }
 }
 
+/**
+ * @brief Fonction qui permet de choisir le coup si il n'est pas connu dans le csv avec une stratégie qui consiste à relier 2 bords le plus rapidement possible 
+ * sans prendre réellement en compte les coups joués par l'adversaire
+ */
 void Guezmer::choisirCoupNonConnu(const Jeu & j, couple& coup){
     // si on est joueur 1 (de haut en bas)
     if(joueur()){
@@ -141,7 +176,7 @@ void Guezmer::choisirCoupNonConnu(const Jeu & j, couple& coup){
             x = x+1;
             y = y;
         }else{
-           // recuperation du dernier coup joué par l'adversaire
+           // recuperation du dernier coup joué par l'adversaire si aucune case n'est libre autour du dernier coup joué de notre part
             std::string derniercoups = "";
             derniercoups = etatPartie.substr(etatPartie.rfind(".") + 1);
             int y1 = std::stoi(derniercoups.substr(0, 1));
@@ -173,7 +208,7 @@ void Guezmer::choisirCoupNonConnu(const Jeu & j, couple& coup){
             x = x+1;
             y = y+1;
         }else{
-            // recuperation du dernier coup joué par l'adversaire
+            // recuperation du dernier coup joué par l'adversaire si aucune case n'est libre autour du dernier coup joué de notre part
             std::string derniercoups = "";
             derniercoups = etatPartie.substr(etatPartie.rfind(".") + 1);
             int y1 = std::stoi(derniercoups.substr(0, 1));
@@ -190,10 +225,14 @@ void Guezmer::choisirCoupNonConnu(const Jeu & j, couple& coup){
     }
 }
 
-
+/**
+ * @brief Fonction qui permet de choisir le meilleur coup à jouer en fonction du jeu et renvoie le coup dans le couple
+*/
 void Guezmer::recherche_coup(Jeu j, couple& coup)
 {
+    // on récupère l'état de la partie
     majEtatPartie(j);
+    // création de variable pour les futur test
     bool toutLesCoupsSontConnus = true;
     auto coupsPossibles = j.coups_possibles();
     int taille = coupsPossibles.size();
@@ -210,11 +249,13 @@ void Guezmer::recherche_coup(Jeu j, couple& coup)
             }
         }
     }
+    //si tous les coups sont connus on appelle choisirCoupConnus 
     if (!toutLesCoupsSontConnus) {
         choisirCoupNonConnu(j,coup);
         etatPartie == "" ? etatPartie = std::to_string(coup.first) + std::to_string(coup.second) : etatPartie = etatPartie + "." + std::to_string(coup.first) + std::to_string(coup.second);
         return;
     }
+    //sinon on recherche le coups à jouer dans le csv en appliquant le calcul du QUBC
     float max = -10;
     for (int i = 0; i < taille; i++) {
         std::string comparateur;
@@ -240,7 +281,9 @@ void Guezmer::recherche_coup(Jeu j, couple& coup)
     }
 }
 
-
+/**
+ * @brief fonction permettant de calculer le QUBC 
+*/
 float Guezmer::qubc(float score, int nbPartiePere, int nbPartieFils) {
     if(!joueur()){ // si je suis le joueur 2
         score = score * -1; // principe de negamax
