@@ -89,12 +89,12 @@ utilisée pour l'exploration d'un arbre de recherche. Elle combine le score moye
 son taux de succès (nombre de parties gagnées) et le nombre de parties totales jouées pour obtenir un 
 score qui représente la confiance de l'IA dans le coup. La formule est :
 
-*** QUBC = score + C * racine_carree(ln(N) / N') ***
+***QUBC = score + C * racine_carree(ln(N) / N')***
 
 Où :
 
-*** score est le score moyen du coup ***
-*** N est le nombre total ***
+***score est le score moyen du coup***
+***N est le nombre total***
 
 ## Auteurs : ##
 Ce projet a été développé par Thomas Landais, Alexandre Salgueiro et Ahmad Houhou dans le cadre d'un projet 
