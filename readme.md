@@ -93,7 +93,7 @@ score qui représente la confiance de l'IA dans le coup. La formule est :
 
 Où :
 
-***score*** est le score moyen du coup
+***score*** est le score moyen du coup,
 ***N*** est le nombre total
 
 ## Auteurs : ##
